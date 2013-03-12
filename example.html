@@ -21,7 +21,7 @@
                 background-color: rgba(255,0,0,.5);
             }
         </style>
-        <script src="matrix3.js"></script>
+        <script src="mini3d.js"></script>
     </head>
     <body>
         <div id="box"></div>
@@ -35,13 +35,13 @@
                 spin: function () {
                     var o = this
                     o.rotationX += toRad(1)
-                    //o.rotationY += toRad(1)
-                    //o.rotationZ += toRad(1)
-                    //o.x += .2
-                    //o.y += .2
-                    //o.z -= .2
-                    // o.scaleX += 0.02
-                    // o.scale += 0.02
+                    o.rotationY += toRad(1)
+                    o.rotationZ += toRad(1)
+                    o.x += .2
+                    o.y += .2
+                    o.z -= .2
+                    o.scaleX += 0.005
+                    o.scale += 0.005
                     o.update()
                 }
             }
