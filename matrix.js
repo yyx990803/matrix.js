@@ -107,15 +107,9 @@ var MX = MX || (function () {
 
     function Object3D (el) {
 
-        if (typeof el === 'string') {
-            this.el = document.querySelector(el)
-        } else if (el instanceof HTMLElement) {
+        if (el instanceof HTMLElement) {
             this.el = el
-        } else {
-            this.el = document.createElement('div')
         }
-
-        this.el.style[transformStyleProp] = 'preserve-3d'
 
         this.matrix = [
             1, 0, 0, 0,
@@ -180,36 +174,58 @@ var MX = MX || (function () {
             }   
         }
 
-        this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
+        if (this.el) {
+            this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
+        }
 
         return this
 
     }
 
     Object3D.prototype.setTransformOrigin = function (origin) {
-        this.el.style[transformOriginProp] = origin
+        this.el && (this.el.style[transformOriginProp] = origin)
         return this
     }
 
     Object3D.prototype.setTransformStyle = function (style) {
-        this.el.style[transformStyleProp] = style
+        this.el && (this.el.style[transformStyleProp] = style)
         return this
     }
 
     Object3D.prototype.setTransition = function (trans) {
-        this.el.style[transitionProp] = trans
+        this.el && (this.el.style[transitionProp] = trans)
         return this
     }
 
     Object3D.prototype.setPerspective = function (pers) {
-        this.el.style[perspectiveProp] = pers
+        this.el && (this.el.style[perspectiveProp] = pers)
         return this
     }
 
     Object3D.prototype.addChild = function (child) {
+        if (!this.el) return
         this.el.appendChild(child.el)
         if (!this.children) this.children = []
         this.children.push(child)
+        return this
+    }
+
+    Object3D.extend = extend.bind(Object3D)
+
+    function extend (props) {
+        var Super = this
+        var Sub = function () {
+                Super.call(this)
+                props.init && props.init.apply(this, arguments)
+            }
+        Sub.prototype.__proto__ = Super.prototype
+        for (var prop in props) {
+            if (props.hasOwnProperty(prop) && prop !== 'init') {
+                Sub.prototype[prop] = props[prop]
+            }
+        }
+        Sub.extend = extend.bind(Sub)
+        return Sub
     }
 
     // need extend method?
