@@ -1,60 +1,61 @@
 window.addEventListener('load', function () {
 
-    // function Card (el) {
-    //     MX.Object3D.call(this, el)
-    //     this.el.classList.add('card')
-    // }
+    var Box = MX.Object3D.extend({
 
-    // Card.prototype = {
-
-    //     __proto__: MX.Object3D.prototype,
-
-    //     spin: function () {
-    //         var o = this
-    //         o.rotationX += toRad(2)
-    //         o.rotationY += toRad(1)
-    //         o.rotationZ += toRad(1)
-    //         o.x += .2
-    //         o.y += .2
-    //         o.z -= .2
-    //         //o.scaleX += 0.005
-    //         //o.scale += 0.005
-    //     }
-
-    // }
-
-    var Card = MX.Object3D.extend({
-        init: function (el) {
-            this.el = el || document.createElement('div')
-            this.el.classList.add('card')
+        init: function () {
+            this.el = document.createElement('div')
+            this.el.classList.add('box')
             this.setTransformStyle('preserve-3d')
-        },
-        spin: function () {
-            var o = this
-            o.rotationX += toRad(2)
-            o.rotationY += toRad(1)
-            o.rotationZ += toRad(1)
-            o.x += .2
-            o.y += .2
-            o.z -= .2
-            //o.scaleX += 0.005
-            //o.scale += 0.005
+
+            var top = new MX.Object3D('div.face')
+            top.rotationX = toRad(-90)
+            top.y = -50
+
+            var bottom = new MX.Object3D('div.face')
+            bottom.rotationX = toRad(90)
+            bottom.y = 50
+
+            var left = new MX.Object3D('div.face')
+            left.rotationY = toRad(-90)
+            left.x = -50
+
+            var right = new MX.Object3D('div.face')
+            right.rotationY = toRad(90)
+            right.x = 50
+
+            var front = new MX.Object3D('div.face')
+            front.z = -50
+
+            var back = new MX.Object3D('div.face')
+            back.z = 50
+
+            this.addChild(top, bottom, left, right, front, back)
+            this.update()
+            this.updateChildren = false
         }
+
     })
 
-    var o = new Card(),
-        p = new Card()
-
-    o.addChild(p)
-
-    document.body.appendChild(o.el)
+    var box = new Box().appendTo('body')
+    var box2 = new Box().appendTo('body')
+    box2.x = -120
+    box2.y = -120
+    var box3 = new Box().appendTo('body')
+    box3.x = 120
+    box3.y = 120
 
     animate()
     function animate () {
         requestAnimationFrame(animate)
-        p.spin()
-        o.spin()
-        o.update()
+
+        box.rotationX += toRad(1)
+        box.update()
+
+        box2.rotationY += toRad(1)
+        box2.update()
+
+        box3.rotationZ += toRad(1)
+        box3.update()
     }
 
     function toRad (deg) {

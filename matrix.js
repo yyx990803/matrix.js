@@ -15,7 +15,7 @@ var MX = MX || (function () {
 
     function sniff () {
         var s = document.body.style
-        prefix = pub.prefix =
+        prefix = MX.prefix =
             'webkitTransform' in s ? 'webkit' :
             'mozTransform' in s ? 'moz' :
             'msTransform' in s ? 'ms' : null
@@ -39,8 +39,6 @@ var MX = MX || (function () {
     //  Matrix Math
     // ========================================================================
 
-    // all transformation matrices are 4x4 matrices represented
-    // by an Array with length 16
     function multiplyMatrix (a, b) {
         var result = [],
             row, col,
@@ -68,25 +66,25 @@ var MX = MX || (function () {
     function buildRotateMatrixX (r) {
         return [
             1, 0, 0, 0,
-            0, Math.cos(r), Math.sin(-r), 0,
-            0, Math.sin(r), Math.cos(r), 0,
+            0, Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0,
+            0, Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0,
             0, 0, 0, 1
         ]
     }
 
     function buildRotateMatrixY (r) {
         return [
-            Math.cos(r), 0, Math.sin(r), 0,
+            Math.cos(r).toFixed(10), 0, Math.sin(r).toFixed(10), 0,
             0, 1, 0, 0,
-            Math.sin(-r), 0, Math.cos(r), 0,
+            Math.sin(-r).toFixed(10), 0, Math.cos(r).toFixed(10), 0,
             0, 0, 0, 1
         ]
     }
 
     function buildRotateMatrixZ (r) {
         return [
-            Math.cos(r), Math.sin(-r), 0, 0,
-            Math.sin(r), Math.cos(r), 0, 0,
+            Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0, 0,
+            Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1
         ]
@@ -102,13 +100,23 @@ var MX = MX || (function () {
     }
 
     // ========================================================================
-    //  Object3D
+    //  Base Object3D
     // ========================================================================
 
     function Object3D (el) {
 
         if (el instanceof HTMLElement) {
             this.el = el
+        } else if (typeof el === 'string') {
+            var tag = el.match(/^([^.]*)(\.|\s|$)/)[1],
+                classes = el.match(/\.[^.]*/g)
+            this.el = document.createElement(tag || 'div')
+            if (classes) {
+                var i = classes.length
+                while (i--) {
+                    this.el.classList.add(classes[i].slice(1))
+                }
+            }
         }
 
         this.matrix = [
@@ -128,16 +136,11 @@ var MX = MX || (function () {
         this.scaleY = this.__scaleY = 1
         this.scaleZ = this.__scaleZ = 1
         this.scale = this.__scale = 1
+
+        this.updateChildren = true
     }
 
     Object3D.prototype.update = function () {
-
-        if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
-            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.x - this.__x, this.y - this.__y, this.z - this.__z))
-            this.__x = this.x
-            this.__y = this.y
-            this.__z = this.z
-        }
 
         if (this.scaleX !== this.__scaleX || this.scaleY !== this.__scaleY || this.scaleZ !== this.__scaleZ) {
             this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(this.scaleX / this.__scaleX, this.scaleY / this.__scaleY, this.scaleZ / this.__scaleZ))
@@ -152,22 +155,38 @@ var MX = MX || (function () {
             this.__scale = this.scale
         }
 
-        if (this.rotationX !== this.__rotationX) {
-            this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixX(this.rotationX - this.__rotationX))
-            this.__rotationX = this.rotationX
+        var rx = this.rotationX !== this.__rotationX,
+            ry = this.rotationY !== this.__rotationY,
+            rz = this.rotationZ !== this.__rotationZ
+
+        if (rx || ry || rz) {
+            // offset the translation
+            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(-this.__x, -this.__y, -this.__z))
+            if (rx) {
+                this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixX(this.rotationX - this.__rotationX))
+                this.__rotationX = this.rotationX
+            }
+
+            if (ry) {
+                this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixY(this.rotationY - this.__rotationY))
+                this.__rotationY = this.rotationY
+            }
+
+            if (rz) {
+                this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixZ(this.rotationZ - this.__rotationZ))
+                this.__rotationZ = this.rotationZ
+            }
+            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.__x, this.__y, this.__z))
         }
 
-        if (this.rotationY !== this.__rotationY) {
-            this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixY(this.rotationY - this.__rotationY))
-            this.__rotationY = this.rotationY
+        if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
+            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.x - this.__x, this.y - this.__y, this.z - this.__z))
+            this.__x = this.x
+            this.__y = this.y
+            this.__z = this.z
         }
 
-        if (this.rotationZ !== this.__rotationZ) {
-            this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixZ(this.rotationZ - this.__rotationZ))
-            this.__rotationZ = this.rotationZ
-        }
-
-        if (this.children) {
+        if (this.children && this.updateChildren) {
             var i = this.children.length
             while (i--) {
                 this.children[i].update()
@@ -202,13 +221,32 @@ var MX = MX || (function () {
         return this
     }
 
-    Object3D.prototype.addChild = function (child) {
-        if (!this.el) return
-        this.el.appendChild(child.el)
-        if (!this.children) this.children = []
-        this.children.push(child)
+    Object3D.prototype.appendTo = function (target) {
+        if (typeof target === 'string') {
+            target = document.querySelector(target)
+        }
+        if (target instanceof HTMLElement && target.appendChild) {
+            target.appendChild(this.el)
+        } else if (target instanceof Object3D) {
+            target.append(this)
+        }
         return this
     }
+
+    Object3D.prototype.addChild = function () {
+        if (!this.el) return
+        var parent = this
+        Array.prototype.forEach.call(arguments, function (child) {
+            parent.el.appendChild(child.el)
+            if (!parent.children) parent.children = []
+            parent.children.push(child)
+        })
+        return this
+    }
+
+    // ========================================================================
+    //  Inheritance
+    // ========================================================================
 
     Object3D.extend = extend.bind(Object3D)
 
@@ -228,11 +266,14 @@ var MX = MX || (function () {
         return Sub
     }
 
-    // need extend method?
-    var pub = {
+    // ========================================================================
+    //  Expose API
+    // ========================================================================
+
+    var MX = {
         Object3D: Object3D
     }
 
-    return pub
+    return MX
 
 })()
