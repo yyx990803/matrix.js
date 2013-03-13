@@ -14,6 +14,7 @@ var MX = MX || (function (undefined) {
     window.addEventListener('DOMContentLoaded', sniff)
 
     function sniff () {
+        console.log('sniffing')
         var s = document.body.style
         prefix = MX.prefix =
             'webkitTransform' in s ? 'webkit' :
