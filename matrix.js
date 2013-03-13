@@ -1,11 +1,51 @@
-var Object3D = Object3D || (function () {
+var MX = MX || (function () {
+
+    // ========================================================================
+    //  Compatibility
+    // ========================================================================
+
+    var prefix,
+        transformProp,
+        transitionProp,
+        transformOriginProp,
+        transformStyleProp,
+        perspectiveProp
+
+    window.addEventListener('DOMContentLoaded', sniff)
+
+    function sniff () {
+        var s = document.body.style
+        prefix = pub.prefix =
+            'webkitTransform' in s ? 'webkit' :
+            'mozTransform' in s ? 'moz' :
+            'msTransform' in s ? 'ms' : null
+        var t = prefix ? prefix + 'T' : 't'
+        transformProp = t + 'ransform'
+        transitionProp = t + 'ransition'
+        transformOriginProp = t + 'ransformOrigin'
+        transformStyleProp = t + 'ransformStyle'
+        perspectiveProp = (prefix ? prefix + 'P' : 'p') + 'erspective'
+
+        var vendors = ['webkit', 'moz', 'ms']
+        for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+            window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame']
+            window.cancelAnimationFrame =
+              window[vendors[x]+'CancelAnimationFrame'] ||
+              window[vendors[x]+'CancelRequestAnimationFrame']
+        }
+    }
+
+    // ========================================================================
+    //  Matrix Math
+    // ========================================================================
 
     // all transformation matrices are 4x4 matrices represented
     // by an Array with length 16
     function multiplyMatrix (a, b) {
         var result = [],
-            row, col
-        for (var i = 0; i < 16; i++) {
+            row, col,
+            i = 16
+        while (i--) {
             row = Math.floor(i/4)
             col = i%4
             result[i] = a[row*4] * b[col]
@@ -61,13 +101,21 @@ var Object3D = Object3D || (function () {
         ]
     }
 
+    // ========================================================================
+    //  Object3D
+    // ========================================================================
+
     function Object3D (el) {
 
         if (typeof el === 'string') {
             this.el = document.querySelector(el)
         } else if (el instanceof HTMLElement) {
             this.el = el
+        } else {
+            this.el = document.createElement('div')
         }
+
+        this.el.style[transformStyleProp] = 'preserve-3d'
 
         this.matrix = [
             1, 0, 0, 0,
@@ -125,16 +173,50 @@ var Object3D = Object3D || (function () {
             this.__rotationZ = this.rotationZ
         }
 
-        if (this.el) {
-            this.el.style.webkitTransform = 'matrix3d(' + this.matrix.join(',') + ')'
+        if (this.children) {
+            var i = this.children.length
+            while (i--) {
+                this.children[i].update()
+            }   
         }
+
+        this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
 
         return this
 
     }
 
-    // need extend method?
+    Object3D.prototype.setTransformOrigin = function (origin) {
+        this.el.style[transformOriginProp] = origin
+        return this
+    }
 
-    return Object3D
+    Object3D.prototype.setTransformStyle = function (style) {
+        this.el.style[transformStyleProp] = style
+        return this
+    }
+
+    Object3D.prototype.setTransition = function (trans) {
+        this.el.style[transitionProp] = trans
+        return this
+    }
+
+    Object3D.prototype.setPerspective = function (pers) {
+        this.el.style[perspectiveProp] = pers
+        return this
+    }
+
+    Object3D.prototype.addChild = function (child) {
+        this.el.appendChild(child.el)
+        if (!this.children) this.children = []
+        this.children.push(child)
+    }
+
+    // need extend method?
+    var pub = {
+        Object3D: Object3D
+    }
+
+    return pub
 
 })()

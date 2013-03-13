@@ -3,6 +3,7 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
         <style type="text/css">
             html, body {
                 height: 100%;
@@ -10,7 +11,7 @@
             body {
                 -webkit-perspective: 800px;
             }
-            #box {
+            .card {
                 width: 100px;
                 height: 100px;
                 position: absolute;
@@ -21,43 +22,9 @@
                 background-color: rgba(255,0,0,.5);
             }
         </style>
-        <script src="mini3d.js"></script>
+        <script src="matrix.js"></script>
+        <script src="example.js"></script>
     </head>
     <body>
-        <div id="box"></div>
-        <script type="text/javascript">
-
-            function Card (el) {
-                Object3D.call(this, el)
-            }
-            Card.prototype = {
-                __proto__: Object3D.prototype,
-                spin: function () {
-                    var o = this
-                    o.rotationX += toRad(1)
-                    o.rotationY += toRad(1)
-                    o.rotationZ += toRad(1)
-                    o.x += .2
-                    o.y += .2
-                    o.z -= .2
-                    o.scaleX += 0.005
-                    o.scale += 0.005
-                    o.update()
-                }
-            }
-
-            var o = new Card('#box')
-
-            animate()
-            function animate () {
-                requestAnimationFrame(animate)
-                o.spin()
-            }
-
-            function toRad (deg) {
-                return deg / 180 * Math.PI
-            }
- 
-        </script>
     </body>
 </html>
