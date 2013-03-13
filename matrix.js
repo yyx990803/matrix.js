@@ -1,4 +1,4 @@
-var MX = MX || (function () {
+var MX = MX || (function (undefined) {
 
     // ========================================================================
     //  Compatibility
@@ -137,111 +137,129 @@ var MX = MX || (function () {
         this.scaleZ = this.__scaleZ = 1
         this.scale = this.__scale = 1
 
+        this.children = []
         this.updateChildren = true
+
+        this.parent = undefined
     }
 
-    Object3D.prototype.update = function () {
+    Object3D.prototype = {
 
-        if (this.scaleX !== this.__scaleX || this.scaleY !== this.__scaleY || this.scaleZ !== this.__scaleZ) {
-            this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(this.scaleX / this.__scaleX, this.scaleY / this.__scaleY, this.scaleZ / this.__scaleZ))
-            this.__scaleX = this.scaleX
-            this.__scaleY = this.scaleY
-            this.__scaleZ = this.scaleZ
-        }
+        constructor: Object3D,
 
-        if (this.scale !== this.__scale) {
-            var s = this.scale / this.__scale
-            this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(s, s, s))
-            this.__scale = this.scale
-        }
+        update: function () {
 
-        var rx = this.rotationX !== this.__rotationX,
-            ry = this.rotationY !== this.__rotationY,
-            rz = this.rotationZ !== this.__rotationZ
-
-        if (rx || ry || rz) {
-            // offset the translation
-            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(-this.__x, -this.__y, -this.__z))
-            if (rx) {
-                this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixX(this.rotationX - this.__rotationX))
-                this.__rotationX = this.rotationX
+            if (this.scaleX !== this.__scaleX || this.scaleY !== this.__scaleY || this.scaleZ !== this.__scaleZ) {
+                this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(this.scaleX / this.__scaleX, this.scaleY / this.__scaleY, this.scaleZ / this.__scaleZ))
+                this.__scaleX = this.scaleX
+                this.__scaleY = this.scaleY
+                this.__scaleZ = this.scaleZ
             }
 
-            if (ry) {
-                this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixY(this.rotationY - this.__rotationY))
-                this.__rotationY = this.rotationY
+            if (this.scale !== this.__scale) {
+                var s = this.scale / this.__scale
+                this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(s, s, s))
+                this.__scale = this.scale
             }
 
-            if (rz) {
-                this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixZ(this.rotationZ - this.__rotationZ))
-                this.__rotationZ = this.rotationZ
+            var rx = this.rotationX !== this.__rotationX,
+                ry = this.rotationY !== this.__rotationY,
+                rz = this.rotationZ !== this.__rotationZ
+
+            if (rx || ry || rz) {
+                // offset the translation
+                this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(-this.__x, -this.__y, -this.__z))
+                if (rx) {
+                    this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixX(this.rotationX - this.__rotationX))
+                    this.__rotationX = this.rotationX
+                }
+
+                if (ry) {
+                    this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixY(this.rotationY - this.__rotationY))
+                    this.__rotationY = this.rotationY
+                }
+
+                if (rz) {
+                    this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixZ(this.rotationZ - this.__rotationZ))
+                    this.__rotationZ = this.rotationZ
+                }
+                this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.__x, this.__y, this.__z))
             }
-            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.__x, this.__y, this.__z))
+
+            if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
+                this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.x - this.__x, this.y - this.__y, this.z - this.__z))
+                this.__x = this.x
+                this.__y = this.y
+                this.__z = this.z
+            }
+
+            if (this.updateChildren) {
+                var i = this.children.length
+                while (i--) {
+                    this.children[i].update()
+                }   
+            }
+
+            if (this.el) {
+                this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
+            }
+
+            return this
+
+        },
+
+        add: function () {
+            if (!this.el) return
+            var parent = this
+            Array.prototype.forEach.call(arguments, function (child) {
+                parent.el.appendChild(child.el)
+                if (!parent.children) parent.children = []
+                parent.children.push(child)
+                child.parent = parent
+            })
+            return this
+        },
+
+        remove: function (child) {
+            var index = this.children.indexOf(child)
+            if (index !== -1) {
+                this.children.splice(index, 1)
+                child.parent = undefined
+            }
+        },
+
+        addTo: function (target) {
+            if (typeof target === 'string') {
+                target = document.querySelector(target)
+            }
+            if (target instanceof HTMLElement && target.appendChild) {
+                target.appendChild(this.el)
+            } else if (target instanceof Object3D) {
+                target.append(this)
+            }
+            return this
+        },
+
+        setTransformOrigin: function (origin) {
+            this.el && (this.el.style[transformOriginProp] = origin)
+            return this
+        },
+
+        setTransformStyle: function (style) {
+            this.el && (this.el.style[transformStyleProp] = style)
+            return this
+        },
+
+        setTransition: function (trans) {
+            this.el && (this.el.style[transitionProp] = trans)
+            return this
+        },
+
+        setPerspective: function (pers) {
+            this.el && (this.el.style[perspectiveProp] = pers)
+            return this
         }
 
-        if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
-            this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.x - this.__x, this.y - this.__y, this.z - this.__z))
-            this.__x = this.x
-            this.__y = this.y
-            this.__z = this.z
-        }
-
-        if (this.children && this.updateChildren) {
-            var i = this.children.length
-            while (i--) {
-                this.children[i].update()
-            }   
-        }
-
-        if (this.el) {
-            this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
-        }
-
-        return this
-
-    }
-
-    Object3D.prototype.setTransformOrigin = function (origin) {
-        this.el && (this.el.style[transformOriginProp] = origin)
-        return this
-    }
-
-    Object3D.prototype.setTransformStyle = function (style) {
-        this.el && (this.el.style[transformStyleProp] = style)
-        return this
-    }
-
-    Object3D.prototype.setTransition = function (trans) {
-        this.el && (this.el.style[transitionProp] = trans)
-        return this
-    }
-
-    Object3D.prototype.setPerspective = function (pers) {
-        this.el && (this.el.style[perspectiveProp] = pers)
-        return this
-    }
-
-    Object3D.prototype.appendTo = function (target) {
-        if (typeof target === 'string') {
-            target = document.querySelector(target)
-        }
-        if (target instanceof HTMLElement && target.appendChild) {
-            target.appendChild(this.el)
-        } else if (target instanceof Object3D) {
-            target.append(this)
-        }
-        return this
-    }
-
-    Object3D.prototype.addChild = function () {
-        if (!this.el) return
-        var parent = this
-        Array.prototype.forEach.call(arguments, function (child) {
-            parent.el.appendChild(child.el)
-            if (!parent.children) parent.children = []
-            parent.children.push(child)
-        })
-        return this
     }
 
     // ========================================================================

@@ -29,18 +29,18 @@ window.addEventListener('load', function () {
             var back = new MX.Object3D('div.face')
             back.z = 50
 
-            this.addChild(top, bottom, left, right, front, back)
+            this.add(top, bottom, left, right, front, back)
             this.update()
             this.updateChildren = false
         }
 
     })
 
-    var box = new Box().appendTo('body')
-    var box2 = new Box().appendTo('body')
+    var box = new Box().addTo('body')
+    var box2 = new Box().addTo('body')
     box2.x = -120
     box2.y = -120
-    var box3 = new Box().appendTo('body')
+    var box3 = new Box().addTo('body')
     box3.x = 120
     box3.y = 120
 
