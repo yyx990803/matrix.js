@@ -14,7 +14,6 @@ var MX = MX || (function (undefined) {
     window.addEventListener('DOMContentLoaded', sniff)
 
     function sniff () {
-        console.log('sniffing')
         var s = document.body.style
         prefix = MX.prefix =
             'webkitTransform' in s ? 'webkit' :
@@ -236,7 +235,7 @@ var MX = MX || (function (undefined) {
             if (target instanceof HTMLElement && target.appendChild) {
                 target.appendChild(this.el)
             } else if (target instanceof Object3D) {
-                target.append(this)
+                target.add(this)
             }
             return this
         },

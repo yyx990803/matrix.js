@@ -1,5 +1,10 @@
 window.addEventListener('load', function () {
 
+    var container = new MX.Object3D('div.container')
+    container
+        .setTransformStyle('preserve-3d')
+        .addTo('body')
+
     var Box = MX.Object3D.extend({
 
         init: function () {
@@ -36,26 +41,27 @@ window.addEventListener('load', function () {
 
     })
 
-    var box = new Box().addTo('body')
-    var box2 = new Box().addTo('body')
+    var box = new Box()
+    var box2 = new Box()
     box2.x = -120
     box2.y = -120
-    var box3 = new Box().addTo('body')
+    var box3 = new Box()
     box3.x = 120
     box3.y = 120
+
+    container.add(box, box2, box3)
 
     animate()
     function animate () {
         requestAnimationFrame(animate)
 
         box.rotationX += toRad(1)
-        box.update()
-
         box2.rotationY += toRad(1)
-        box2.update()
-
         box3.rotationZ += toRad(1)
-        box3.update()
+
+        container.rotationX += toRad(1)
+
+        container.update()
     }
 
     function toRad (deg) {
