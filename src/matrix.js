@@ -2,7 +2,8 @@ var MX = MX || (function (undefined) {
 
     var MX = {
         prefix: undefined,
-        rotationUnit: 'rad'
+        rotationUnit: 'rad',
+        positionAtCenter: true
     }
 
     // ========================================================================
@@ -40,7 +41,7 @@ var MX = MX || (function (undefined) {
     }
 
     // ========================================================================
-    //  Matrix Math
+    //  Simple Matrix Math
     // ========================================================================
 
     function multiplyMatrix (a, b) {
@@ -132,6 +133,7 @@ var MX = MX || (function (undefined) {
         }
 
         this.setTransformStyle('preserve-3d')
+        this.el.classList.add('mx-object3d')
 
         this.x = this.__x = 0
         this.y = this.__y = 0
@@ -149,7 +151,7 @@ var MX = MX || (function (undefined) {
 
         this.parent = undefined
 
-        this.dirty = false
+        this.dirty = true
     }
 
     Object3D.prototype = {
@@ -192,11 +194,12 @@ var MX = MX || (function (undefined) {
             }
 
             if (this.dirty) {
-                this.el.style[transformProp] = 'translate3d(' + this.x + 'px,' + -this.y + 'px,' + -this.z + 'px) '
-                                            + 'scale3d(' + this.scaleX + ',' + this.scaleY + ',' + this.scaleZ + ') '
-                                            + 'rotateX(' + this.rotationX + MX.rotationUnit + ') '
-                                            + 'rotateY(' + this.rotationY + MX.rotationUnit + ') '
-                                            + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ') '  
+                this.el.style[transformProp] = (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '') +
+                    'translate3d(' + this.x + 'px,' + -this.y + 'px,' + -this.z + 'px) '
+                    + 'scale3d(' + this.scaleX + ',' + this.scaleY + ',' + this.scaleZ + ') '
+                    + 'rotateX(' + this.rotationX + MX.rotationUnit + ') '
+                    + 'rotateY(' + this.rotationY + MX.rotationUnit + ') '
+                    + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ') '  
                 this.dirty = false
             }
 

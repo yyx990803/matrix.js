@@ -28,7 +28,6 @@
                 box-shadow: 0px 0px 20px rgba(0,255,255,0.5);
                 border: 1px solid rgba(127,255,255,0.25);
                 cursor: default;
-                position: absolute;
             }
 
             .element:hover {
@@ -69,11 +68,12 @@
                 color: rgba(127,255,255,0.75);
             }
 
-            #scene {
+            .mx-object3d {
                 position: absolute;
                 top: 50%;
                 left: 50%;
             }
+
         </style>
         <script src="libs/tween.min.js"></script>
         <script src="../src/matrix.js"></script>
@@ -204,7 +204,10 @@
 
             var scene,
                 targets = {
-                    table: []
+                    table: [],
+                    sphere: [],
+                    helix: [],
+                    grid: []
                 }
 
             function init () {
@@ -258,8 +261,53 @@
 
                 }
 
-                transform(targets.table, 4000)
+                // sphere
 
+                for ( var i = 0, l = scene.children.length; i < l; i ++ ) {
+
+                    var phi = Math.acos( -1 + ( 2 * i ) / l )
+                    var theta = Math.sqrt( l * Math.PI ) * phi
+
+                    targets.sphere.push({
+                        x : 1000 * Math.cos( theta ) * Math.sin( phi ),
+                        y : 1000 * Math.sin( theta ) * Math.sin( phi ),
+                        z : 1000 * Math.cos( phi )
+                    });
+
+                }
+
+                // helix
+
+                for ( var i = 0, l = scene.children.length; i < l; i ++ ) {
+
+                    var phi = i * 0.175 + Math.PI
+
+                    var object = {}
+
+                    object.x = 1100 * Math.sin( phi )
+                    object.y = - ( i * 8 ) + 450
+                    object.z = 1100 * Math.cos( phi )
+
+                    targets.helix.push( object )
+
+                }
+
+                // grid
+
+                for ( var i = 0; i < scene.children.length; i ++ ) {
+
+                    var object = {}
+
+                    object.x = ( ( i % 5 ) * 400 ) - 800
+                    object.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800
+                    object.z = ( Math.floor( i / 25 ) ) * 1000 - 2000
+
+                    targets.grid.push( object )
+
+                }
+
+
+                transform(targets.table, 4000)
                 animate()
 
             }
@@ -286,6 +334,14 @@
                 TWEEN.update()
                 scene.update()
             }
+
+            var shapes = ['table', 'sphere', 'helix', 'grid'],
+                currentShape = 0
+            document.body.addEventListener('click', function () {
+                currentShape++
+                currentShape = currentShape >= shapes.length ? 0 : currentShape
+                transform(targets[shapes[currentShape]])
+            })
         </script>
     </body>
 </html>
