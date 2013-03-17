@@ -40,6 +40,70 @@ var MX = MX || (function (undefined) {
     }
 
     // ========================================================================
+    //  Matrix Math
+    // ========================================================================
+
+    function multiplyMatrix (a, b) {
+        var result = [],
+            row, col,
+            i = 16
+        while (i--) {
+            row = Math.floor(i/4)
+            col = i%4
+            result[i] = a[row*4] * b[col]
+                + a[row*4+1] * b[4+col]
+                + a[row*4+2] * b[8+col]
+                + a[row*4+3] * b[12+col]
+        }
+        return result
+    }
+
+    function buildScaleMatrix (sx, sy, sz) {
+        return [
+            sx, 0, 0, 0,
+            0, sy, 0, 0,
+            0, 0, sz, 0,
+            0, 0, 0, 1
+        ]
+    }
+
+    function buildRotateMatrixX (r) {
+        return [
+            1, 0, 0, 0,
+            0, Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0,
+            0, Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0,
+            0, 0, 0, 1
+        ]
+    }
+
+    function buildRotateMatrixY (r) {
+        return [
+            Math.cos(r).toFixed(10), 0, Math.sin(r).toFixed(10), 0,
+            0, 1, 0, 0,
+            Math.sin(-r).toFixed(10), 0, Math.cos(r).toFixed(10), 0,
+            0, 0, 0, 1
+        ]
+    }
+
+    function buildRotateMatrixZ (r) {
+        return [
+            Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0, 0,
+            Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        ]
+    }
+
+    function buildTraslateMatrix (x, y, z) {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            x, y, z, 1
+        ]
+    }
+
+    // ========================================================================
     //  Base Object3D
     // ========================================================================
 
