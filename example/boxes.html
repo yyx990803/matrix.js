@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <style type="text/css">
+            html, body {
+                height: 100%;
+                overflow: hidden;
+                margin: 0;
+            }
+            body {
+                -webkit-perspective: 800px;
+                -moz-perspective: 800px;
+                perspective: 800px;
+                background-color: #000;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+            }
+            #container {
+                width: 100%;
+                height: 100%;
+            }
+            .face {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: rgba(0, 255, 122, .1);
+                box-sizing: border-box;
+                border: 1px solid #0f3;
+            }
+            .box {
+                width: 100px;
+                height: 100px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-left: -50px;
+                margin-top: -50px;
+            }
+            .box:hover .face {
+                background-color: rgba(0, 255, 122, .2);
+                box-shadow: 0 0 36px rgba(0,255,122,.5);
+            }
+            .text {
+                margin: 0;
+                font-size: 16px;
+                line-height: 100px;
+                text-align: center;
+                color: #fff;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -webkit-filter: drop-shadow(0px 0px 20px rgba(255,255,255,0.5));
+            }
+        </style>
+        <script src="../src/matrix.js"></script>
+        <script src="libs/stats.min.js"></script>
+        <script>
+            window.addEventListener('load', function () {
+
+            var stats = new Stats()
+
+            stats.domElement.style.position = 'absolute'
+            stats.domElement.style.left = '0px'
+            stats.domElement.style.top = '0px'
+
+            document.body.appendChild(stats.domElement)
+
+            // set rotation unit
+            MX.rotationUnit = 'deg'
+
+            // this creates a div with id="container" and appends it to body (using querySelector)
+            // you can also pass in an existing DOM node
+            var container = new MX.Object3D('div#container').addTo('body')
+
+            // you can extend Object3D
+            var Box = MX.Object3D.extend({
+
+                // this will be called within the contructor
+                init: function (size) {
+
+                    // an Object3D's associated DOM node is the "el" property
+                    this.el.classList.add('box')
+
+                    var top = new MX.Object3D('div.face')
+                    top.el.innerHTML = '<p class="text">Matrix.js</p>'
+                    top.rotationX = 90
+                    top.y = 50
+
+                    var bottom = new MX.Object3D('div.face')
+                    bottom.rotationX = -90
+                    bottom.y = -50
+
+                    var left = new MX.Object3D('div.face')
+                    left.rotationY = -90
+                    left.x = -50
+
+                    var right = new MX.Object3D('div.face')
+                    right.rotationY = 90
+                    right.x = 50
+
+                    var front = new MX.Object3D('div.face')
+                    front.z = -50
+
+                    var back = new MX.Object3D('div.face')
+                    back.z = 50
+
+                    // adding children, must also be instances of Object3D
+                    this.add(top, bottom, left, right, front, back)
+
+                    this.scale = size / 100
+
+                    // this applies the updated CSS style
+                    // required for any change to take effect
+                    // when a parent object's update() is called
+                    // all its children will be updated as well
+                    this.update()
+
+                    // if this object's children won't move by themselves
+                    this.updateChildren = false
+                }
+
+                // other properties will be mixed into the prototype of the new constructor
+
+            })
+
+            var boxes = [],
+                axes = ['X', 'Y', 'Z'],
+                w = window.innerWidth,
+                h = window.innerHeight
+
+            // each box contains 6 faces
+            // so number of elements ~= 180
+            for (var i = 0; i < 30; i++) {
+
+                var box = new Box(Math.random() * 70 + 30)
+
+                // setting random position for each box
+                box.x = Math.random() * w - w/2
+                box.y = Math.random() * h - h/2
+                box.z = Math.random() * 500 - 250
+
+                // simply attaching some random data here
+                box.axis = axes[Math.floor(Math.random() * 3)]
+
+                container.add(box)
+            }
+
+            animate()
+            function animate () {
+                stats.begin()
+
+                requestAnimationFrame(animate)
+
+                container.children.forEach(function (box) {
+                    box['rotation' + box.axis] += .5
+                })
+
+                container.rotationX += .5
+                container.update()
+
+                stats.end()
+            }
+
+        })
+        </script>
+    </head>
+    <body>
+        <a href="https://github.com/yyx990803/matrix.js" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0; z-index:999" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+    </body>
+</html>

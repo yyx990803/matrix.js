@@ -1,11 +1,15 @@
 var MX = MX || (function (undefined) {
 
+    var MX = {
+        prefix: undefined,
+        rotationUnit: 'rad'
+    }
+
     // ========================================================================
     //  Compatibility
     // ========================================================================
 
-    var prefix,
-        transformProp,
+    var transformProp,
         transitionProp,
         transformOriginProp,
         transformStyleProp,
@@ -15,16 +19,16 @@ var MX = MX || (function (undefined) {
 
     function sniff () {
         var s = document.body.style
-        prefix = MX.prefix =
+        MX.prefix =
             'webkitTransform' in s ? 'webkit' :
             'mozTransform' in s ? 'moz' :
             'msTransform' in s ? 'ms' : null
-        var t = prefix ? prefix + 'T' : 't'
+        var t = MX.prefix ? MX.prefix + 'T' : 't'
         transformProp = t + 'ransform'
         transitionProp = t + 'ransition'
         transformOriginProp = t + 'ransformOrigin'
         transformStyleProp = t + 'ransformStyle'
-        perspectiveProp = (prefix ? prefix + 'P' : 'p') + 'erspective'
+        perspectiveProp = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
 
         var vendors = ['webkit', 'moz', 'ms']
         for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -33,70 +37,6 @@ var MX = MX || (function (undefined) {
               window[vendors[x]+'CancelAnimationFrame'] ||
               window[vendors[x]+'CancelRequestAnimationFrame']
         }
-    }
-
-    // ========================================================================
-    //  Matrix Math
-    // ========================================================================
-
-    function multiplyMatrix (a, b) {
-        var result = [],
-            row, col,
-            i = 16
-        while (i--) {
-            row = Math.floor(i/4)
-            col = i%4
-            result[i] = a[row*4] * b[col]
-                + a[row*4+1] * b[4+col]
-                + a[row*4+2] * b[8+col]
-                + a[row*4+3] * b[12+col]
-        }
-        return result
-    }
-
-    function buildScaleMatrix (sx, sy, sz) {
-        return [
-            sx, 0, 0, 0,
-            0, sy, 0, 0,
-            0, 0, sz, 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildRotateMatrixX (r) {
-        return [
-            1, 0, 0, 0,
-            0, Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0,
-            0, Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildRotateMatrixY (r) {
-        return [
-            Math.cos(r).toFixed(10), 0, Math.sin(r).toFixed(10), 0,
-            0, 1, 0, 0,
-            Math.sin(-r).toFixed(10), 0, Math.cos(r).toFixed(10), 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildRotateMatrixZ (r) {
-        return [
-            Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0, 0,
-            Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildTraslateMatrix (x, y, z) {
-        return [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            x, y, z, 1
-        ]
     }
 
     // ========================================================================
@@ -128,13 +68,6 @@ var MX = MX || (function (undefined) {
         }
 
         this.setTransformStyle('preserve-3d')
-
-        this.matrix = [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        ]
 
         this.x = this.__x = 0
         this.y = this.__y = 0
@@ -169,7 +102,6 @@ var MX = MX || (function (undefined) {
             }
 
             if (this.scaleX !== this.__scaleX || this.scaleY !== this.__scaleY || this.scaleZ !== this.__scaleZ) {
-                this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(this.scaleX / this.__scaleX, this.scaleY / this.__scaleY, this.scaleZ / this.__scaleZ))
                 this.__scaleX = this.scaleX
                 this.__scaleY = this.scaleY
                 this.__scaleZ = this.scaleZ
@@ -177,39 +109,18 @@ var MX = MX || (function (undefined) {
             }
 
             if (this.scale !== this.__scale) {
-                var s = this.scale / this.__scale
-                this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(s, s, s))
-                this.__scale = this.scale
+                this.__scale = this.__scaleX = this.__scaleY = this.__scaleZ = this.scaleX = this.scaleY = this.scaleZ = this.scale
                 this.dirty = true
             }
 
-            var rx = this.rotationX !== this.__rotationX,
-                ry = this.rotationY !== this.__rotationY,
-                rz = this.rotationZ !== this.__rotationZ
-
-            if (rx || ry || rz) {
-                // offset the translation
-                this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(-this.__x, -this.__y, -this.__z))
-                if (rx) {
-                    this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixX(this.rotationX - this.__rotationX))
-                    this.__rotationX = this.rotationX
-                }
-
-                if (ry) {
-                    this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixY(this.rotationY - this.__rotationY))
-                    this.__rotationY = this.rotationY
-                }
-
-                if (rz) {
-                    this.matrix = multiplyMatrix(this.matrix, buildRotateMatrixZ(this.rotationZ - this.__rotationZ))
-                    this.__rotationZ = this.rotationZ
-                }
-                this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.__x, this.__y, this.__z))
+            if (this.rotationX !== this.__rotationX || this.rotationY !== this.__rotationY || this.rotationZ !== this.__rotationZ) {
+                this.__rotationX = this.rotationX
+                this.__rotationY = this.rotationY
+                this.__rotationZ = this.rotationZ
                 this.dirty = true
             }
 
             if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
-                this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.x - this.__x, this.y - this.__y, this.z - this.__z))
                 this.__x = this.x
                 this.__y = this.y
                 this.__z = this.z
@@ -217,7 +128,11 @@ var MX = MX || (function (undefined) {
             }
 
             if (this.dirty) {
-                this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
+                this.el.style[transformProp] = 'translate3d(' + this.x + 'px,' + -this.y + 'px,' + -this.z + 'px) '
+                                            + 'scale3d(' + this.scaleX + ',' + this.scaleY + ',' + this.scaleZ + ') '
+                                            + 'rotateX(' + this.rotationX + MX.rotationUnit + ') '
+                                            + 'rotateY(' + this.rotationY + MX.rotationUnit + ') '
+                                            + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ') '  
                 this.dirty = false
             }
 
@@ -306,9 +221,7 @@ var MX = MX || (function (undefined) {
     //  Expose API
     // ========================================================================
 
-    var MX = {
-        Object3D: Object3D
-    }
+    MX.Object3D = Object3D
 
     return MX
 
