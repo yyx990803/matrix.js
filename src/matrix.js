@@ -243,6 +243,7 @@ var MX = MX || (function (undefined) {
                 this.children.splice(index, 1)
                 child.parent = undefined
             }
+            return this
         },
 
         addTo: function (target) {
