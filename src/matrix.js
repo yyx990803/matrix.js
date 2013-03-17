@@ -105,19 +105,29 @@ var MX = MX || (function (undefined) {
 
     function Object3D (el) {
 
+        this.el = undefined
+
         if (el instanceof HTMLElement) {
             this.el = el
         } else if (typeof el === 'string') {
-            var tag = el.match(/^([^.]*)(\.|\s|$)/)[1],
-                classes = el.match(/\.[^.]*/g)
+            var tag = el.match(/^[^.#\s]*/)[1],
+                classes = el.match(/\.[^.#\s]*/g),
+                id = el.match(/#[^.#\s]*/)
             this.el = document.createElement(tag || 'div')
+            if (id) {
+                this.el.id = id[0].slice(1)
+            }
             if (classes) {
                 var i = classes.length
                 while (i--) {
                     this.el.classList.add(classes[i].slice(1))
                 }
             }
+        } else {
+            this.el = document.createElement('div')
         }
+
+        this.setTransformStyle('preserve-3d')
 
         this.matrix = [
             1, 0, 0, 0,
@@ -141,6 +151,8 @@ var MX = MX || (function (undefined) {
         this.updateChildren = true
 
         this.parent = undefined
+
+        this.dirty = false
     }
 
     Object3D.prototype = {
@@ -149,17 +161,26 @@ var MX = MX || (function (undefined) {
 
         update: function () {
 
+            if (this.updateChildren) {
+                var i = this.children.length
+                while (i--) {
+                    this.children[i].update()
+                }
+            }
+
             if (this.scaleX !== this.__scaleX || this.scaleY !== this.__scaleY || this.scaleZ !== this.__scaleZ) {
                 this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(this.scaleX / this.__scaleX, this.scaleY / this.__scaleY, this.scaleZ / this.__scaleZ))
                 this.__scaleX = this.scaleX
                 this.__scaleY = this.scaleY
                 this.__scaleZ = this.scaleZ
+                this.dirty = true
             }
 
             if (this.scale !== this.__scale) {
                 var s = this.scale / this.__scale
                 this.matrix = multiplyMatrix(this.matrix, buildScaleMatrix(s, s, s))
                 this.__scale = this.scale
+                this.dirty = true
             }
 
             var rx = this.rotationX !== this.__rotationX,
@@ -184,6 +205,7 @@ var MX = MX || (function (undefined) {
                     this.__rotationZ = this.rotationZ
                 }
                 this.matrix = multiplyMatrix(this.matrix, buildTraslateMatrix(this.__x, this.__y, this.__z))
+                this.dirty = true
             }
 
             if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
@@ -191,17 +213,12 @@ var MX = MX || (function (undefined) {
                 this.__x = this.x
                 this.__y = this.y
                 this.__z = this.z
+                this.dirty = true
             }
 
-            if (this.updateChildren) {
-                var i = this.children.length
-                while (i--) {
-                    this.children[i].update()
-                }   
-            }
-
-            if (this.el) {
+            if (this.dirty) {
                 this.el.style[transformProp] = 'matrix3d(' + this.matrix.join(',') + ')'
+                this.dirty = false
             }
 
             return this

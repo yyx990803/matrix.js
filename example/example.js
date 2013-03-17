@@ -1,18 +1,15 @@
 window.addEventListener('load', function () {
 
-    var container = new MX.Object3D('div.container')
-    container
-        .setTransformStyle('preserve-3d')
-        .addTo('body')
+    var container = new MX.Object3D('div#container').addTo('body')
 
     var Box = MX.Object3D.extend({
 
-        init: function () {
-            this.el = document.createElement('div')
+        init: function (size) {
+
             this.el.classList.add('box')
-            this.setTransformStyle('preserve-3d')
 
             var top = new MX.Object3D('div.face')
+            top.el.innerHTML = '<p class="text">Matrix.js</p>'
             top.rotationX = toRad(-90)
             top.y = -50
 
@@ -35,32 +32,40 @@ window.addEventListener('load', function () {
             back.z = 50
 
             this.add(top, bottom, left, right, front, back)
+
+            this.scale = size / 100
+
             this.update()
             this.updateChildren = false
         }
 
     })
 
-    var box = new Box()
-    var box2 = new Box()
-    box2.x = -120
-    box2.y = -120
-    var box3 = new Box()
-    box3.x = 120
-    box3.y = 120
+    var boxes = [],
+        axes = ['X', 'Y', 'Z'],
+        w = window.innerWidth,
+        h = window.innerHeight
 
-    container.add(box, box2, box3)
+    for (var i = 0; i < 30; i++) {
+        var box = new Box(Math.random() * 70 + 30)
+        box.x = Math.random() * w - w/2
+        box.y = Math.random() * h - h/2
+        box.z = Math.random() * 500 - 250
+        box.axis = axes[Math.floor(Math.random() * 3)]
+        container.add(box)
+    }
+
+    var step = toRad(.5)
 
     animate()
     function animate () {
         requestAnimationFrame(animate)
 
-        box.rotationX += toRad(1)
-        box2.rotationY += toRad(1)
-        box3.rotationZ += toRad(1)
+        container.children.forEach(function (box) {
+            box['rotation' + box.axis] += step
+        })
 
-        container.rotationX += toRad(1)
-
+        container.rotationX += step
         container.update()
     }
 
