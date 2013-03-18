@@ -1,6 +1,6 @@
 ### work in progress
 
-[Examples](http://sketch.evanyou.me/matrix/)
+[Examples](http://sketch.evanyou.me/matrix/example/)
 
 A mini CSS 3D engine. Similar to Three.js CSS3D Renderer, but less intrusive and much lighter-weight (< 300 lines), arguably faster (and of course much smaller feature set).
 
