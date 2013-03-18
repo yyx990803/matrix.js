@@ -246,18 +246,18 @@ var MX = MX || (function (undefined) {
 
     function extend (props) {
         var Super = this
-        var Sub = function () {
+        var ExtendedObject3D = function () {
                 Super.call(this)
                 props.init && props.init.apply(this, arguments)
             }
-        Sub.prototype.__proto__ = Super.prototype
+        ExtendedObject3D.prototype = Object.create(Super.prototype)
         for (var prop in props) {
             if (props.hasOwnProperty(prop) && prop !== 'init') {
-                Sub.prototype[prop] = props[prop]
+                ExtendedObject3D.prototype[prop] = props[prop]
             }
         }
-        Sub.extend = extend.bind(Sub)
-        return Sub
+        ExtendedObject3D.extend = extend.bind(ExtendedObject3D)
+        return ExtendedObject3D
     }
 
     // ========================================================================
