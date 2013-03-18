@@ -105,6 +105,18 @@ var MX = MX || (function (undefined) {
     }
 
     // ========================================================================
+    //  Utils
+    // ========================================================================
+
+    function toDeg (rad) {
+        return rad / Math.PI * 180
+    }
+
+    function toRad (deg) {
+        return deg / 180 * Math.PI
+    }
+
+    // ========================================================================
     //  Base Object3D
     // ========================================================================
 
@@ -197,6 +209,7 @@ var MX = MX || (function (undefined) {
                 this.el.style[transformProp] = (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '') +
                     'translate3d(' + this.x + 'px,' + -this.y + 'px,' + -this.z + 'px) '
                     + 'scale3d(' + this.scaleX + ',' + this.scaleY + ',' + this.scaleZ + ') '
+                    // euler order XYZ
                     + 'rotateX(' + this.rotationX + MX.rotationUnit + ') '
                     + 'rotateY(' + this.rotationY + MX.rotationUnit + ') '
                     + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ')'
@@ -205,6 +218,35 @@ var MX = MX || (function (undefined) {
 
             return this
 
+        },
+
+        lookAt: function (target) {
+            var r = this.getLookAtEuler(target)
+            this.rotationX = r.x
+            this.rotationY = r.y
+            this.rotationZ = r.z
+            this.update()
+            return this
+        },
+
+        getLookAtEuler: function (target) {
+            // euler order XYZ
+            var r = {},
+                dx = target.x - this.x,
+                dy = target.y - this.y,
+                dz = target.z - this.z
+            if (dz === 0) dz = 0.0001
+            r.x = -Math.atan2(dy, dz).toFixed(10)
+            var flip = dz >= 0 ? 1 : -1
+            r.y = -flip * Math.atan2(dx * Math.cos(r.x), dz * flip).toFixed(10)
+            r.z = -Math.atan2(Math.cos(r.x), Math.sin(r.x) * Math.sin(r.y)).toFixed(10)
+            if (MX.rotationUnit === 'deg') {
+                r.x = toDeg(r.x)
+                r.y = toDeg(r.y)
+                r.z = toDeg(r.z)
+            }
+            console.log(r)
+            return r
         },
 
         add: function () {

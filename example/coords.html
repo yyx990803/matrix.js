@@ -7,85 +7,128 @@
         <style>
             html, body {
                 height: 100%;
+                overflow: hidden;
+                margin: 0;
             }
             body {
                 background-color: #111;
                 -webkit-perspective: 1000px;
                 font-family: Arial, sans-serif;
             }
-            #coords {
+            #scene, #coords {
                 position: absolute;
                 top: 50%;
                 left: 50%;
             }
-            .axis {
-                width: 500px;
-                height: 5px;
+            #scene {
+                width: 50%;
+                height: 50%;
+                z-index: 1;
+            }
+            .axis, .face {
+                width: 300px;
+                height: 4px;
                 position: absolute;
+            }
+            .face {
+                top: 50%;
+                left: 50%;
             }
             .label {
                 position: absolute;
                 right: 0;
-                bottom: 2px;
+                bottom: 3px;
             }
             #x {
                 color: #f00;
-                background-color: #f00;
             }
-            #x .label {
-                
+            #x .face {
+                background-color: #f00;
             }
             #y {
                 color: #0f0;
-                background-color: #0f0;
             }
-            #y .label {
-
+            #y .face {
+                background-color: #0f0;
             }
             #z {
                 color: #66f;
+            }
+            #z .face {
                 background-color: #66f;
             }
+            #target {
+                width: 6px;
+                height: 6px;
+                background-color: #fff;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+            }
+            .dg .ac {
+                z-index: 9999;
+            }
         </style>
+        <script src="libs/dat.gui.min.js"></script>
     </head>
     <body>
-        <div id="coords">
-        </div>
         <script>
 
             MX.rotationUnit = 'deg'
 
             window.addEventListener('load', function () {
 
-                var coords = new MX.Object3D(document.getElementById('coords')),
-                x = new MX.Object3D('#x.axis'),
-                y = new MX.Object3D('#y.axis'),
-                z = new MX.Object3D('#z.axis')
-                x.el.innerHTML = '<span class="label">X</span>'
-                y.el.innerHTML = '<span class="label">Y</span>'
-                z.el.innerHTML = '<span class="label">Z</span>'
+                var scene = new MX.Object3D('#scene').addTo('body')
+
+                var Axis = MX.Object3D.extend({
+                    init: function (id) {
+                        this.el.id = id
+                        this.el.classList.add('axis')
+                        this.el.innerHTML = '<span class="label">' + id + '</span>'
+                        var faceA = new MX.Object3D('.face'),
+                            faceB = new MX.Object3D('.face')
+                        faceA.rotationX = 90
+                        this.add(faceA, faceB)
+                    }
+                })
+
+                var coords = new MX.Object3D('#coords').addTo(scene),
+                    x = new Axis('x')
+                    y = new Axis('y'),
+                    z = new Axis('z'),
+                    target = new MX.Object3D('#target').addTo(scene)
+
+                target.x = 0
+                target.y = 0
+                target.z = 100
+                target.update()
 
                 coords.add(x, y, z)
                 y.rotationZ = -90
                 z.rotationY = 90
 
-                coords.rotationX = -30
-                //coords.rotationZ = -40
-                coords.update()
+                scene.rotationX = -10
+                scene.rotationY = -30
+                scene.update()
 
+                var stopped = true
                 animate()
                 function animate () {
                     requestAnimationFrame(animate)
-                    coords.rotationY += 1
-                    //coords.rotationY += 1
-                    coords.update()
+                    scene.update()
+                    if (!stopped) scene.rotationY += 1
                 }
 
-                // coords.lookAt({
-                //     x: 100,
-                //     y: 100,
-                //     z: 0
-                // })
+                coords.lookAt(target)
+
+                var gui = new dat.GUI()
+                gui.add(coords, 'rotationX', 0, 360)
+                gui.add(coords, 'rotationY', 0, 360)
+                gui.add(coords, 'rotationZ', 0, 360)
+
+                document.getElementById('scene').addEventListener('click', function () {
+                    stopped = !stopped
+                })
 
             })
             
