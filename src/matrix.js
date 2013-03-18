@@ -16,7 +16,7 @@ var MX = MX || (function (undefined) {
         transformStyleProp,
         perspectiveProp
 
-    window.addEventListener('DOMContentLoaded', sniff)
+    document.addEventListener('DOMContentLoaded', sniff)
 
     function sniff () {
         var s = document.body.style
