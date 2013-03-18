@@ -123,7 +123,12 @@
             var boxes = [],
                 axes = ['X', 'Y', 'Z'],
                 w = window.innerWidth,
-                h = window.innerHeight
+                h = window.innerHeight,
+                origin = {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                }
 
             // each box contains 6 faces
             // so number of elements ~= 180
@@ -135,6 +140,8 @@
                 box.x = Math.random() * w - w/2
                 box.y = Math.random() * h - h/2
                 box.z = Math.random() * 500 - 250
+
+                box.setRotationOrigin(origin)
 
                 // box.x = i * 120 - 120
                 // box.y = i * 120 - 120
