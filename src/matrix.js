@@ -6,6 +6,8 @@ var MX = MX || (function (undefined) {
         positionAtCenter: true
     }
 
+    var floatPrecision = 5
+
     // ========================================================================
     //  Compatibility
     // ========================================================================
@@ -19,17 +21,20 @@ var MX = MX || (function (undefined) {
     document.addEventListener('DOMContentLoaded', sniff)
 
     function sniff () {
+
         var s = document.body.style
+
         MX.prefix =
             'webkitTransform' in s ? 'webkit' :
             'mozTransform' in s ? 'moz' :
             'msTransform' in s ? 'ms' : null
+
         var t = MX.prefix ? MX.prefix + 'T' : 't'
-        transformProp = t + 'ransform'
-        transitionProp = t + 'ransition'
+        transformProp       = t + 'ransform'
+        transitionProp      = t + 'ransition'
         transformOriginProp = t + 'ransformOrigin'
-        transformStyleProp = t + 'ransformStyle'
-        perspectiveProp = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
+        transformStyleProp  = t + 'ransformStyle'
+        perspectiveProp     = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
 
         var vendors = ['webkit', 'moz', 'ms']
         for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -63,9 +68,9 @@ var MX = MX || (function (undefined) {
         if (el instanceof HTMLElement) {
             this.el = el
         } else if (typeof el === 'string') {
-            var tag = el.match(/^[^.#\s]*/)[1],
-                classes = el.match(/\.[^.#\s]*/g),
-                id = el.match(/#[^.#\s]*/)
+            var tag     = el.match(/^[^.#\s]*/)[1],
+                id      = el.match(/#[^.#\s]*/),
+                classes = el.match(/\.[^.#\s]*/g)
             this.el = document.createElement(tag || 'div')
             if (id) {
                 this.el.id = id[0].slice(1)
@@ -83,16 +88,16 @@ var MX = MX || (function (undefined) {
         this.setTransformStyle('preserve-3d')
         this.el.classList.add('mx-object3d')
 
-        this.x = this.__x = 0
-        this.y = this.__y = 0
-        this.z = this.__z = 0
-        this.rotationX = this.__rotationX = 0
-        this.rotationY = this.__rotationY = 0
-        this.rotationZ = this.__rotationZ = 0
-        this.scaleX = this.__scaleX = 1
-        this.scaleY = this.__scaleY = 1
-        this.scaleZ = this.__scaleZ = 1
-        this.scale = this.__scale = 1
+        this.x = this.__x                   = 0
+        this.y = this.__y                   = 0
+        this.z = this.__z                   = 0
+        this.rotationX = this.__rotationX   = 0
+        this.rotationY = this.__rotationY   = 0
+        this.rotationZ = this.__rotationZ   = 0
+        this.scaleX = this.__scaleX         = 1
+        this.scaleY = this.__scaleY         = 1
+        this.scaleZ = this.__scaleZ         = 1
+        this.scale = this.__scale           = 1
 
         this.children = []
         this.updateChildren = true
@@ -115,26 +120,39 @@ var MX = MX || (function (undefined) {
                 }
             }
 
-            if (this.scaleX !== this.__scaleX || this.scaleY !== this.__scaleY || this.scaleZ !== this.__scaleZ) {
-                this.__scaleX = this.scaleX
-                this.__scaleY = this.scaleY
-                this.__scaleZ = this.scaleZ
-                this.dirty = true
+            if (this.scaleX !== this.__scaleX ||
+                this.scaleY !== this.__scaleY ||
+                this.scaleZ !== this.__scaleZ) {
+                    this.__scaleX = this.scaleX
+                    this.__scaleY = this.scaleY
+                    this.__scaleZ = this.scaleZ
+                    this.dirty = true
             }
 
             if (this.scale !== this.__scale) {
-                this.__scale = this.__scaleX = this.__scaleY = this.__scaleZ = this.scaleX = this.scaleY = this.scaleZ = this.scale
+                this.scaleX =
+                this.scaleY =
+                this.scaleZ =
+                this.__scaleX =
+                this.__scaleY =
+                this.__scaleZ =
+                this.__scale =
+                    this.scale
                 this.dirty = true
             }
 
-            if (this.rotationX !== this.__rotationX || this.rotationY !== this.__rotationY || this.rotationZ !== this.__rotationZ) {
-                this.__rotationX = this.rotationX
-                this.__rotationY = this.rotationY
-                this.__rotationZ = this.rotationZ
-                this.dirty = true
+            if (this.rotationX !== this.__rotationX ||
+                this.rotationY !== this.__rotationY ||
+                this.rotationZ !== this.__rotationZ) {
+                    this.__rotationX = this.rotationX
+                    this.__rotationY = this.rotationY
+                    this.__rotationZ = this.rotationZ
+                    this.dirty = true
             }
 
-            if (this.x !== this.__x || this.y !== this.__y || this.z !== this.__z) {
+            if (this.x !== this.__x ||
+                this.y !== this.__y ||
+                this.z !== this.__z) {
                 this.__x = this.x
                 this.__y = this.y
                 this.__z = this.z
@@ -142,12 +160,18 @@ var MX = MX || (function (undefined) {
             }
 
             if (this.dirty) {
-                this.el.style[transformProp] = (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '') +
-                    'translate3d(' + this.x.toFixed(5) + 'px,' + (-this.y).toFixed(5) + 'px,' + (-this.z).toFixed(5) + 'px) '
-                    + 'scale3d(' + this.scaleX.toFixed(5) + ',' + this.scaleY.toFixed(5) + ',' + this.scaleZ.toFixed(5) + ') '
-                    + 'rotateX(' + this.rotationX.toFixed(5) + MX.rotationUnit + ') '
-                    + 'rotateY(' + this.rotationY.toFixed(5) + MX.rotationUnit + ') '
-                    + 'rotateZ(' + this.rotationZ.toFixed(5) + MX.rotationUnit + ')'
+                this.el.style[transformProp] = (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '')
+                    + 'translate3d('
+                        + this.x.toFixed(floatPrecision) + 'px,'
+                        + (-this.y).toFixed(floatPrecision) + 'px,'
+                        + (-this.z).toFixed(floatPrecision) + 'px) '
+                    + 'scale3d('
+                        + this.scaleX.toFixed(floatPrecision) + ','
+                        + this.scaleY.toFixed(floatPrecision) + ','
+                        + this.scaleZ.toFixed(floatPrecision) + ') '
+                    + 'rotateX(' + this.rotationX.toFixed(floatPrecision) + MX.rotationUnit + ') '
+                    + 'rotateY(' + this.rotationY.toFixed(floatPrecision) + MX.rotationUnit + ') '
+                    + 'rotateZ(' + this.rotationZ.toFixed(floatPrecision) + MX.rotationUnit + ')'
                 this.dirty = false
             }
 
