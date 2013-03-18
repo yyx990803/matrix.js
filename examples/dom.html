@@ -18,29 +18,27 @@
         </style>
         <script src="../src/matrix.js"></script>
     </head>
-    <body>
+    <body onload="init()">
         <div id="test">
             <h1>123123</h1>
             <p>Loren isfsfjsf jflsekfj slejf sljfe slejkf slekfj sljfslekfjl sjelf jslfej seljfk eslkfj lsekf jslekjf slkfj lskjf slekjf slkjf lsekjf lsekjf slkjf slekjf lsejkffj lskejf lsekj flskjf lskjf slkje fslekjf slekjf lsekjf lsekjf lsej flsekj lsekj lsej lj</p>
         </div>
         <script>
+        function init () {
 
             MX.rotationUnit = 'deg'
             MX.positionAtCenter = false // avoid translating original position
 
-            window.addEventListener('load', function () {
+            var obj = new MX.Object3D(document.getElementById('test'))
+            obj.x += 100
 
-                var obj = new MX.Object3D(document.getElementById('test'))
-                obj.x += 100
-
-                animate()
-                function animate () {
-                    requestAnimationFrame(animate)
-                    obj.rotationX += 1
-                    obj.update()
-                }
-
-            })
+            animate()
+            function animate () {
+                requestAnimationFrame(animate)
+                obj.rotationX += 1
+                obj.update()
+            }
+        }
         </script>
     </body>
 </html>

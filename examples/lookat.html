@@ -4,7 +4,6 @@
         <title>lookAt() example</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-        <script src="../src/matrix.js"></script>
         <style>
             html, body {
                 height: 100%;
@@ -81,17 +80,13 @@
                 z-index: 999 !important;
             }
         </style>
+        <script src="../src/matrix.js"></script>
         <script src="libs/dat.gui.min.js"></script>
-    </head>
-    <body>
-        <div id="wrapper">
-            <h1>Matrix.js lookAt() example</h1>
-        </div>
         <script>
 
-            MX.rotationUnit = 'deg'
+            function init () {
 
-            window.addEventListener('load', function () {
+                MX.rotationUnit = 'deg'
 
                 var scene = new MX.Object3D('#scene').addTo('#wrapper')
 
@@ -144,8 +139,13 @@
                     stopped = !stopped
                 })
 
-            })
+            }
             
         </script>
+    </head>
+    <body onload="init()">
+        <div id="wrapper">
+            <h1>Matrix.js lookAt() example</h1>
+        </div>
     </body>
 </html>

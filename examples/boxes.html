@@ -53,15 +53,13 @@
         <script src="libs/stats.min.js"></script>
         <script>
 
+        function init () {
+
             // stats
-            window.addEventListener('load', function () {
-
             var stats = new Stats()
-
             stats.domElement.style.position = 'absolute'
             stats.domElement.style.left = '0px'
             stats.domElement.style.top = '0px'
-
             document.body.appendChild(stats.domElement)
 
             // set rotation unit
@@ -163,10 +161,10 @@
                 stats.end()
             }
 
-        })
+        }
         </script>
     </head>
-    <body>
+    <body onload="init()">
         <a href="https://github.com/yyx990803/matrix.js" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0; z-index:999" src="images/fork.png" alt="Fork me on GitHub"></a>
     </body>
 </html>

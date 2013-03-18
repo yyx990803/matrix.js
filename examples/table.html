@@ -118,20 +118,7 @@
         <script src="libs/tween.min.js"></script>
         <script src="libs/stats.min.js"></script>
         <script src="../src/matrix.js"></script>
-    </head>
-    <body>
-        <div id="info">
-            Based on Three.js CSS3DRenderer example. Powered by Matrix.js
-        </div>
-        <div id="buttons">
-            <a onclick="transform('table')">Table</a> | 
-            <a onclick="transform('sphere')">Sphere</a> | 
-            <a onclick="transform('helix')">Helix</a> | 
-            <a onclick="transform('grid')">Grid</a>
-        </div>
         <script>
-
-            window.addEventListener('load', init)
 
             var table = [
                 [ "H", "Hydrogen", "1.00794", 1, 1 ],
@@ -430,5 +417,16 @@
                 stats.end()
             }
         </script>
+    </head>
+    <body onload="init()">
+        <div id="info">
+            Based on Three.js CSS3DRenderer example. Powered by Matrix.js
+        </div>
+        <div id="buttons">
+            <a onclick="transform('table')">Table</a> | 
+            <a onclick="transform('sphere')">Sphere</a> | 
+            <a onclick="transform('helix')">Helix</a> | 
+            <a onclick="transform('grid')">Grid</a>
+        </div>
     </body>
 </html>
