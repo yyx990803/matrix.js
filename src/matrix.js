@@ -63,7 +63,26 @@ var MX = MX || (function (undefined) {
 
     function Object3D (el) {
 
-        this.el = undefined
+        this.x = this.__x                   = 0
+        this.y = this.__y                   = 0
+        this.z = this.__z                   = 0
+        this.rotationX = this.__rotationX   = 0
+        this.rotationY = this.__rotationY   = 0
+        this.rotationZ = this.__rotationZ   = 0
+        this.scaleX = this.__scaleX         = 1
+        this.scaleY = this.__scaleY         = 1
+        this.scaleZ = this.__scaleZ         = 1
+        this.scale = this.__scale           = 1
+
+        this.parent                         = undefined
+        this.children                       = []
+        this.updateChildren                 = true
+
+        this.rotationTranslation            = undefined
+
+        this.dirty                          = true
+
+        this.el                             = undefined
 
         if (el instanceof HTMLElement) {
             this.el = el
@@ -85,26 +104,8 @@ var MX = MX || (function (undefined) {
             this.el = document.createElement('div')
         }
 
-        this.setTransformStyle('preserve-3d')
+        this.setCSSTransformStyle('preserve-3d')
         this.el.classList.add('mx-object3d')
-
-        this.x = this.__x                   = 0
-        this.y = this.__y                   = 0
-        this.z = this.__z                   = 0
-        this.rotationX = this.__rotationX   = 0
-        this.rotationY = this.__rotationY   = 0
-        this.rotationZ = this.__rotationZ   = 0
-        this.scaleX = this.__scaleX         = 1
-        this.scaleY = this.__scaleY         = 1
-        this.scaleZ = this.__scaleZ         = 1
-        this.scale = this.__scale           = 1
-
-        this.children = []
-        this.updateChildren = true
-
-        this.parent = undefined
-
-        this.dirty = true
     }
 
     Object3D.prototype = {
@@ -169,9 +170,11 @@ var MX = MX || (function (undefined) {
                         + this.scaleX.toFixed(floatPrecision) + ','
                         + this.scaleY.toFixed(floatPrecision) + ','
                         + this.scaleZ.toFixed(floatPrecision) + ') '
+                    + (this.rotationTranslation ? this.rotationTranslation.before : '')
                     + 'rotateX(' + this.rotationX.toFixed(floatPrecision) + MX.rotationUnit + ') '
                     + 'rotateY(' + this.rotationY.toFixed(floatPrecision) + MX.rotationUnit + ') '
-                    + 'rotateZ(' + this.rotationZ.toFixed(floatPrecision) + MX.rotationUnit + ')'
+                    + 'rotateZ(' + this.rotationZ.toFixed(floatPrecision) + MX.rotationUnit + ') '
+                    + (this.rotationTranslation ? this.rotationTranslation.after : '')
                 this.dirty = false
             }
 
@@ -240,22 +243,37 @@ var MX = MX || (function (undefined) {
             return this
         },
 
-        setTransformOrigin: function (origin) {
+        setRotationOrigin: function (origin) {
+            if (!origin) {
+                this.rotationTranslation = undefined
+                return this
+            }
+            var dx = origin.x - this.x,
+                dy = -(origin.y - this.y),
+                dz = -(origin.z - this.z)
+            this.rotationTranslation = {
+                before: 'translate3d(' + dx +'px,' + dy + 'px,' + dz + 'px) ',
+                after: 'translate3d(' + (-dx) + 'px,' + (-dy) + 'px,' + (-dz) + 'px) '
+            }
+            return this
+        },
+
+        setCSSTransformOrigin: function (origin) {
             this.el && (this.el.style[transformOriginProp] = origin)
             return this
         },
 
-        setTransformStyle: function (style) {
+        setCSSTransformStyle: function (style) {
             this.el && (this.el.style[transformStyleProp] = style)
             return this
         },
 
-        setTransition: function (trans) {
+        setCSSTransition: function (trans) {
             this.el && (this.el.style[transitionProp] = trans)
             return this
         },
 
-        setPerspective: function (pers) {
+        setCSSPerspective: function (pers) {
             this.el && (this.el.style[perspectiveProp] = pers)
             return this
         }
