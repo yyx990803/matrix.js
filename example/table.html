@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
+        <title>Periodic talbe example</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
         <style>
             html, body {
                 height: 100%;
@@ -13,9 +14,9 @@
                 margin: 0;
                 font-family: Arial;
                 overflow: hidden;
-                -webkit-perspective: 1800px;
-                -moz-perspective: 1800px;
-                perspective: 1800px;
+                -webkit-perspective: 600px;
+                -moz-perspective: 600px;
+                perspective: 600px;
             }
 
             a {
@@ -74,13 +75,64 @@
                 left: 50%;
             }
 
+            #scene {
+                z-index: 1;
+            }
+
+            #buttons {
+                position: absolute;
+                bottom: 30px;
+                width: 100%;
+                text-align: center;
+                font-size: 11px;
+            }
+
+            #buttons a {
+                color: rgba(127,255,255,0.75);
+                background: transparent;
+                outline: 1px solid rgba(127,255,255,0.75);
+                border: 0px;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+
+            #buttons a:hover {
+                background-color: rgba(0,255,255,0.5);
+            }
+
+            #buttons a:active {
+                color: #000000;
+                background-color: rgba(0,255,255,0.75);
+            }
+
+            #info {
+                position: absolute;
+                top: 12px;
+                width: 100%;
+                font-size: 11px;
+                text-align: center;
+                color: #fff;
+            }
+
         </style>
         <script src="libs/tween.min.js"></script>
+        <script src="libs/stats.min.js"></script>
         <script src="../src/matrix.js"></script>
     </head>
     <body>
+        <div id="info">
+            Based on Three.js CSS3DRenderer example. Powered by Matrix.js
+        </div>
+        <div id="buttons">
+            <a onclick="transform('table')">Table</a> | 
+            <a onclick="transform('sphere')">Sphere</a> | 
+            <a onclick="transform('helix')">Helix</a> | 
+            <a onclick="transform('grid')">Grid</a>
+        </div>
         <script>
+
             window.addEventListener('load', init)
+
             var table = [
                 [ "H", "Hydrogen", "1.00794", 1, 1 ],
                 [ "He", "Helium", "4.002602", 18, 1 ],
@@ -203,6 +255,7 @@
             ]
 
             var scene,
+                stats,
                 targets = {
                     table: [],
                     sphere: [],
@@ -212,7 +265,17 @@
 
             function init () {
 
+                // stats
+                stats = new Stats()
+                stats.domElement.style.position = 'absolute'
+                stats.domElement.style.left = '0px'
+                stats.domElement.style.top = '0px'
+                document.body.appendChild(stats.domElement)
+
+                // scene
                 scene = new MX.Object3D('#scene').addTo('body')
+                scene.z = 1500
+                scene.update()
 
                 for ( var i = 0; i < table.length; i ++ ) {
 
@@ -245,9 +308,6 @@
 
                 }
 
-                scene.z = 4500
-                scene.update()
-
                 // table
                 for ( var i = 0; i < scene.children.length; i ++ ) {
 
@@ -256,7 +316,10 @@
                     targets.table.push({
                         x: ( item[3] * 160 ) - 1540,
                         y: - ( item[4] * 200 ) + 1100,
-                        z: 0
+                        z: 0,
+                        rotationX: 0,
+                        rotationY: 0,
+                        rotationZ: 0
                     })
 
                 }
@@ -268,11 +331,24 @@
                     var phi = Math.acos( -1 + ( 2 * i ) / l )
                     var theta = Math.sqrt( l * Math.PI ) * phi
 
-                    targets.sphere.push({
+                    var object = {
                         x : 1000 * Math.cos( theta ) * Math.sin( phi ),
                         y : 1000 * Math.sin( theta ) * Math.sin( phi ),
                         z : 1000 * Math.cos( phi )
-                    });
+                    }
+
+                    var target = {
+                        x: object.x * 2,
+                        y: object.y * 2,
+                        z: object.z * 2
+                    }
+
+                    var r = MX.Object3D.prototype.getLookAtEuler.call(object, target)
+                    object.rotationX = r.x
+                    object.rotationY = r.y
+                    object.rotationZ = r.z
+
+                    targets.sphere.push(object)
 
                 }
 
@@ -288,6 +364,17 @@
                     object.y = - ( i * 8 ) + 450
                     object.z = 1100 * Math.cos( phi )
 
+                    var target = {
+                        x: object.x * 2,
+                        y: object.y,
+                        z: object.z * 2
+                    }
+
+                    var r = MX.Object3D.prototype.getLookAtEuler.call(object, target)
+                    object.rotationX = r.x
+                    object.rotationY = r.y
+                    object.rotationZ = r.z
+
                     targets.helix.push( object )
 
                 }
@@ -296,7 +383,11 @@
 
                 for ( var i = 0; i < scene.children.length; i ++ ) {
 
-                    var object = {}
+                    var object = {
+                        rotationX: 0,
+                        rotationY: 0,
+                        rotationZ: 0
+                    }
 
                     object.x = ( ( i % 5 ) * 400 ) - 800
                     object.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800
@@ -306,13 +397,14 @@
 
                 }
 
-
-                transform(targets.table, 4000)
+                transform('table', 4000)
                 animate()
 
             }
 
-            function transform (targets, duration) {
+            function transform (t, duration) {
+
+                t = targets[t]
 
                 duration = duration || 2000
 
@@ -320,7 +412,7 @@
 
                 for (var i = 0; i < scene.children.length; i++) {
                     var object = scene.children[i],
-                        target = targets[i]
+                        target = t[i]
 
                     new TWEEN.Tween(object)
                         .to(target, Math.random() * duration + duration)
@@ -330,18 +422,13 @@
             }
 
             function animate () {
+                stats.begin()
                 requestAnimationFrame( animate )
                 TWEEN.update()
+                scene.rotationY += Math.PI / 180 / 10
                 scene.update()
+                stats.end()
             }
-
-            var shapes = ['table', 'sphere', 'helix', 'grid'],
-                currentShape = 0
-            document.body.addEventListener('click', function () {
-                currentShape++
-                currentShape = currentShape >= shapes.length ? 0 : currentShape
-                transform(targets[shapes[currentShape]])
-            })
         </script>
     </body>
 </html>

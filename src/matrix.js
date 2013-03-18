@@ -41,70 +41,6 @@ var MX = MX || (function (undefined) {
     }
 
     // ========================================================================
-    //  Simple Matrix Math
-    // ========================================================================
-
-    function multiplyMatrix (a, b) {
-        var result = [],
-            row, col,
-            i = 16
-        while (i--) {
-            row = Math.floor(i/4)
-            col = i%4
-            result[i] = a[row*4] * b[col]
-                + a[row*4+1] * b[4+col]
-                + a[row*4+2] * b[8+col]
-                + a[row*4+3] * b[12+col]
-        }
-        return result
-    }
-
-    function buildScaleMatrix (sx, sy, sz) {
-        return [
-            sx, 0, 0, 0,
-            0, sy, 0, 0,
-            0, 0, sz, 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildRotateMatrixX (r) {
-        return [
-            1, 0, 0, 0,
-            0, Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0,
-            0, Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildRotateMatrixY (r) {
-        return [
-            Math.cos(r).toFixed(10), 0, Math.sin(r).toFixed(10), 0,
-            0, 1, 0, 0,
-            Math.sin(-r).toFixed(10), 0, Math.cos(r).toFixed(10), 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildRotateMatrixZ (r) {
-        return [
-            Math.cos(r).toFixed(10), Math.sin(-r).toFixed(10), 0, 0,
-            Math.sin(r).toFixed(10), Math.cos(r).toFixed(10), 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    function buildTraslateMatrix (x, y, z) {
-        return [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            x, y, z, 1
-        ]
-    }
-
-    // ========================================================================
     //  Utils
     // ========================================================================
 
@@ -207,12 +143,11 @@ var MX = MX || (function (undefined) {
 
             if (this.dirty) {
                 this.el.style[transformProp] = (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '') +
-                    'translate3d(' + this.x + 'px,' + -this.y + 'px,' + -this.z + 'px) '
-                    + 'scale3d(' + this.scaleX + ',' + this.scaleY + ',' + this.scaleZ + ') '
-                    // euler order XYZ
-                    + 'rotateX(' + this.rotationX + MX.rotationUnit + ') '
-                    + 'rotateY(' + this.rotationY + MX.rotationUnit + ') '
-                    + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ')'
+                    'translate3d(' + this.x.toFixed(5) + 'px,' + (-this.y).toFixed(5) + 'px,' + (-this.z).toFixed(5) + 'px) '
+                    + 'scale3d(' + this.scaleX.toFixed(5) + ',' + this.scaleY.toFixed(5) + ',' + this.scaleZ.toFixed(5) + ') '
+                    + 'rotateX(' + this.rotationX.toFixed(5) + MX.rotationUnit + ') '
+                    + 'rotateY(' + this.rotationY.toFixed(5) + MX.rotationUnit + ') '
+                    + 'rotateZ(' + this.rotationZ.toFixed(5) + MX.rotationUnit + ')'
                 this.dirty = false
             }
 
@@ -235,17 +170,16 @@ var MX = MX || (function (undefined) {
                 dx = target.x - this.x,
                 dy = target.y - this.y,
                 dz = target.z - this.z
-            if (dz === 0) dz = 0.0001
-            r.x = -Math.atan2(dy, dz).toFixed(10)
-            var flip = dz >= 0 ? 1 : -1
-            r.y = -flip * Math.atan2(dx * Math.cos(r.x), dz * flip).toFixed(10)
-            r.z = -Math.atan2(Math.cos(r.x), Math.sin(r.x) * Math.sin(r.y)).toFixed(10)
+            if (dz === 0) dz = 0.001
+            r.x = -Math.atan2(dy, dz)
+            var flip = dz > 0 ? 1 : -1
+            r.y = flip * Math.atan2(dx * Math.cos(r.x), dz * -flip)
+            r.z = Math.atan2(Math.cos(r.x), Math.sin(r.x) * Math.sin(r.y)) - Math.PI / 2
             if (MX.rotationUnit === 'deg') {
                 r.x = toDeg(r.x)
                 r.y = toDeg(r.y)
                 r.z = toDeg(r.z)
             }
-            console.log(r)
             return r
         },
 
