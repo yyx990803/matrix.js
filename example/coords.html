@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="../src/matrix.js"></script>
+        <style>
+            html, body {
+                height: 100%;
+            }
+            body {
+                background-color: #111;
+                -webkit-perspective: 1000px;
+                font-family: Arial, sans-serif;
+            }
+            #coords {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+            }
+            .axis {
+                width: 500px;
+                height: 5px;
+                position: absolute;
+            }
+            .label {
+                position: absolute;
+                right: 0;
+                bottom: 2px;
+            }
+            #x {
+                color: #f00;
+                background-color: #f00;
+            }
+            #x .label {
+                
+            }
+            #y {
+                color: #0f0;
+                background-color: #0f0;
+            }
+            #y .label {
+
+            }
+            #z {
+                color: #66f;
+                background-color: #66f;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="coords">
+        </div>
+        <script>
+
+            MX.rotationUnit = 'deg'
+
+            window.addEventListener('load', function () {
+
+                var coords = new MX.Object3D(document.getElementById('coords')),
+                x = new MX.Object3D('#x.axis'),
+                y = new MX.Object3D('#y.axis'),
+                z = new MX.Object3D('#z.axis')
+                x.el.innerHTML = '<span class="label">X</span>'
+                y.el.innerHTML = '<span class="label">Y</span>'
+                z.el.innerHTML = '<span class="label">Z</span>'
+
+                coords.add(x, y, z)
+                y.rotationZ = -90
+                z.rotationY = 90
+
+                coords.rotationX = -30
+                //coords.rotationZ = -40
+                coords.update()
+
+                animate()
+                function animate () {
+                    requestAnimationFrame(animate)
+                    coords.rotationY += 1
+                    //coords.rotationY += 1
+                    coords.update()
+                }
+
+                // coords.lookAt({
+                //     x: 100,
+                //     y: 100,
+                //     z: 0
+                // })
+
+            })
+            
+        </script>
+    </body>
+</html>

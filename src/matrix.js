@@ -199,7 +199,7 @@ var MX = MX || (function (undefined) {
                     + 'scale3d(' + this.scaleX + ',' + this.scaleY + ',' + this.scaleZ + ') '
                     + 'rotateX(' + this.rotationX + MX.rotationUnit + ') '
                     + 'rotateY(' + this.rotationY + MX.rotationUnit + ') '
-                    + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ') '  
+                    + 'rotateZ(' + this.rotationZ + MX.rotationUnit + ')'
                 this.dirty = false
             }
 
