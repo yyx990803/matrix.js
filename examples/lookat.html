@@ -28,47 +28,10 @@
                 perspective: 1000px;
                 z-index: 1;
             }
-            .mx-object3d {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-            }
-            #scene {
+            #container {
                 width: 50%;
                 height: 50%;
                 z-index: 1;
-            }
-            .axis, .face {
-                width: 80px;
-                height: 4px;
-                position: absolute;
-            }
-            .label {
-                position: absolute;
-                right: 0;
-                bottom: 3px;
-            }
-            #x {
-                color: #f33;
-            }
-            #x .face {
-                background-color: #f33;
-            }
-            #y {
-                color: #3f3;
-            }
-            #y .face {
-                background-color: #3f3;
-            }
-            #z {
-                color: #66f;
-            }
-            #z .face {
-                width: 120px;
-                background-color: #66f;
-            }
-            #z .label {
-                right: 0;
             }
             #target {
                 width: 10px;
@@ -84,6 +47,7 @@
             }
         </style>
         <script src="../src/matrix.js"></script>
+        <script src="libs/mx.coords.js"></script>
         <script src="libs/dat.gui.min.js"></script>
         <script>
 
@@ -91,37 +55,58 @@
 
                 MX.rotationUnit = 'deg'
 
-                var scene = new MX.Object3D('#scene').addTo('#wrapper')
+                var container = new MX.Object3D('#container').addTo('#wrapper')
 
-                var Axis = MX.Object3D.extend({
-                    init: function (id) {
-                        this.el.id = id
-                        this.el.classList.add('axis')
-                        this.el.innerHTML = '<span class="label">' + id + '</span>'
-                        var faceA = new MX.Object3D('.face'),
-                            faceB = new MX.Object3D('.face')
-                        faceA.rotationX = 90
-                        this.add(faceA, faceB)
-                    }
-                })
+                // var Axis = MX.Object3D.extend({
+                //     init: function (axis, size) {
 
-                var Coords = MX.Object3D.extend({
-                    init: function () {
-                        this.el.classList.add('.coords')
-                        var x = new Axis('x'),
-                            y = new Axis('y'),
-                            z = new Axis('z')
-                        y.rotationZ = -90
-                        z.rotationY = 90
-                        this.add(x, y, z)
-                        this.update()
-                        this.updateChildren = false
-                    }
-                })
+                //         size = size || 100
+                //         this.el.width = size + 'px'
+                //         this.el.height = '4px'
+
+                //         var label = document.createElement('span')
+                //         label.textContent = axis.toUpperCase()
+                //         label.style.position = 'absolute'
+                //         label.style.right = '0px'
+                //         label.style.bottom = '3px'
+                //         this.el.appendChild(label)
+
+                //         var faceA = new MX.Object3D('.face'),
+                //             faceB = new MX.Object3D('.face')
+                //         faceA.rotationX = 90
+                //         this.add(faceA, faceB)
+
+                //         switch (axis) {
+                //             case 'x':
+                //                 this.el.style.color =
+                //                 faceA.style.backgroundColor = 
+                //                 faceB.style.backgroundColor = '#F33'
+                //                 break
+                //             case 'y':
+                //                 break
+                //             case 'z':
+                //                 break
+                //         }
+                //     }
+                // })
+
+                // var Coords = MX.Object3D.extend({
+                //     init: function () {
+                //         this.el.classList.add('.coords')
+                //         var x = new Axis('x'),
+                //             y = new Axis('y'),
+                //             z = new Axis('z')
+                //         y.rotationZ = -90
+                //         z.rotationY = 90
+                //         this.add(x, y, z)
+                //         this.update()
+                //         this.updateChildren = false
+                //     }
+                // })
 
                 var coords = []
                 for (var i = 0; i < 10; i++) {
-                    var c = new Coords().addTo(scene)
+                    var c = new MX.Coords().addTo(container)
                     c.x = Math.random() * 1000 - 500
                     c.y = Math.random() * 600 - 300
                     c.z = Math.random() * 600 - 300
@@ -129,11 +114,11 @@
                     c.update()
                 }
 
-                scene.rotationX = -15
-                scene.update()
+                container.rotationX = -15
+                container.update()
 
                 // add a target maker
-                var target = new MX.Object3D('#target').addTo(scene)
+                var target = new MX.Object3D('#target').addTo(container)
                 target.x = Math.round(Math.random() * 500 - 250)
                 target.y = Math.round(Math.random() * 500 - 250)
                 target.z = Math.round(Math.random() * 500 - 250)
@@ -154,8 +139,8 @@
                     coords.forEach(function (c) {
                         c.lookAt(target)
                     })
-                    scene.update()
-                    if (state.autoRotate) scene.rotationY += .3
+                    container.update()
+                    if (state.autoRotate) container.rotationY += .3
                 }
 
             }

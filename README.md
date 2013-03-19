@@ -2,7 +2,7 @@
 
 [Examples](http://sketch.evanyou.me/matrix/examples/)
 
-A mini CSS 3D engine. Similar to Three.js CSS3D Renderer, but less intrusive and much lighter-weight (~ 300 lines, 5kb minified). Better suited to add 3D stuff to a normal DOM heavy page. Doesn't provide any vector/matrix math utilities though.
+A featherweight CSS 3D engine. Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Better suited to add 3D stuff to a normal DOM heavy page. Doesn't provide any vector/matrix math utilities though.
 
 ### But there are no matrices in the source code!
 

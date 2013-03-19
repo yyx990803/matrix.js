@@ -33,7 +33,7 @@
             <p>
                 By default, Matrix.js automatically center objects with the following transform:
                 <pre>translate3d(-50%, -50%, 0)</pre>
-                And every <code>MX.Object3d</code> comes with the class <code>.mx-object3d</code>. So you can auto center all objects inside a container with the following CSS rules:
+                And every <code>MX.Object3d</code> comes with the class <code>.mx-object3d</code>. Matrix.js will automatically inject/remove the following CSS rules:
                 <pre>
 .mx-object3d {
     position: absolute;
@@ -42,7 +42,7 @@
 }</pre>
             </p>
             <p>
-                But sometimes we simply want to add 3D movement to exsiting DOM nodes without tampering with their positioning. This page shows that you can disable the default centering behaviour by setting:<pre>MX.positionAtCenter = false</pre>
+                Sometimes we want to add 3D movement to exsiting DOM nodes without tampering with their positioning. This page shows that you can disable the default centering behaviour by simply setting:<pre>MX.positionAtCenter = false</pre>
             </p>
         </div>
         <script>
@@ -70,12 +70,12 @@
                     obj.update()
                 } else {
                     obj.reset()
-                    obj.update()
                 }
             }
 
             var gui = new dat.GUI()
             gui.add(controls, 'effectOn')
+            gui.add(MX, 'positionAtCenter')
         }
         </script>
     </body>
