@@ -24,9 +24,11 @@
                 height: 100%;
                 position: relative;
                 -webkit-perspective: 1000px;
+                -moz-perspective: 1000px;
+                perspective: 1000px;
                 z-index: 1;
             }
-            #scene, #coords {
+            .mx-object3d {
                 position: absolute;
                 top: 50%;
                 left: 50%;
@@ -37,13 +39,9 @@
                 z-index: 1;
             }
             .axis, .face {
-                width: 300px;
+                width: 80px;
                 height: 4px;
                 position: absolute;
-            }
-            .face {
-                top: 50%;
-                left: 50%;
             }
             .label {
                 position: absolute;
@@ -66,11 +64,15 @@
                 color: #66f;
             }
             #z .face {
+                width: 120px;
                 background-color: #66f;
             }
+            #z .label {
+                right: 0;
+            }
             #target {
-                width: 6px;
-                height: 6px;
+                width: 10px;
+                height: 10px;
                 background-color: #fff;
                 position: absolute;
                 top: 50%;
@@ -103,14 +105,29 @@
                     }
                 })
 
-                var coords = new MX.Object3D('#coords').addTo(scene),
-                    x = new Axis('x')
-                    y = new Axis('y'),
-                    z = new Axis('z'),
+                var Coords = MX.Object3D.extend({
+                    init: function () {
+                        this.el.classList.add('.coords')
+                        var x = new Axis('x'),
+                            y = new Axis('y'),
+                            z = new Axis('z')
+                        y.rotationZ = -90
+                        z.rotationY = 90
+                        this.add(x, y, z)
+                        this.update()
+                        this.updateChildren = false
+                    }
+                })
 
-                coords.add(x, y, z)
-                y.rotationZ = -90
-                z.rotationY = 90
+                var coords = []
+                for (var i = 0; i < 10; i++) {
+                    var c = new Coords().addTo(scene)
+                    c.x = Math.random() * 1000 - 500
+                    c.y = Math.random() * 600 - 300
+                    c.z = Math.random() * 600 - 300
+                    coords.push(c)
+                    c.update()
+                }
 
                 scene.rotationX = -15
                 scene.update()
@@ -122,23 +139,24 @@
                 target.z = Math.round(Math.random() * 500 - 250)
                 target.update()
 
+                var state = {}
+                state.autoRotate = false
+
                 var gui = new dat.GUI()
                 gui.add(target, 'x', -500, 500)
                 gui.add(target, 'y', -500, 500)
                 gui.add(target, 'z', -500, 500)
-
-                var stopped = true
+                gui.add(state, 'autoRotate')
+                
                 animate()
                 function animate () {
                     requestAnimationFrame(animate)
-                    coords.lookAt(target)
+                    coords.forEach(function (c) {
+                        c.lookAt(target)
+                    })
                     scene.update()
-                    if (!stopped) scene.rotationY += 1
+                    if (state.autoRotate) scene.rotationY += .3
                 }
-
-                document.getElementById('wrapper').addEventListener('click', function () {
-                    stopped = !stopped
-                })
 
             }
             
