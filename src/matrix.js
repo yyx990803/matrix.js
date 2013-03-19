@@ -1,3 +1,25 @@
+/**
+ * Copyright (C) 2013 by Evan You
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 var MX = MX || (function (undefined) {
 
     var MX = {
@@ -63,26 +85,13 @@ var MX = MX || (function (undefined) {
 
     function Object3D (el) {
 
-        this.x = this.__x                   = 0
-        this.y = this.__y                   = 0
-        this.z = this.__z                   = 0
-        this.rotationX = this.__rotationX   = 0
-        this.rotationY = this.__rotationY   = 0
-        this.rotationZ = this.__rotationZ   = 0
-        this.scaleX = this.__scaleX         = 1
-        this.scaleY = this.__scaleY         = 1
-        this.scaleZ = this.__scaleZ         = 1
-        this.scale = this.__scale           = 1
+        this.reset()
 
-        this.parent                         = undefined
-        this.children                       = []
-        this.updateChildren                 = true
+        this.parent         = undefined
+        this.children       = []
+        this.updateChildren = true
 
-        this.rotationTranslation            = undefined
-
-        this.dirty                          = true
-
-        this.el                             = undefined
+        this.el             = undefined
 
         if (el instanceof HTMLElement) {
             this.el = el
@@ -111,6 +120,21 @@ var MX = MX || (function (undefined) {
     Object3D.prototype = {
 
         constructor: Object3D,
+
+        reset: function () {
+            this.x = this.__x                   = 0
+            this.y = this.__y                   = 0
+            this.z = this.__z                   = 0
+            this.rotationX = this.__rotationX   = 0
+            this.rotationY = this.__rotationY   = 0
+            this.rotationZ = this.__rotationZ   = 0
+            this.scaleX = this.__scaleX         = 1
+            this.scaleY = this.__scaleY         = 1
+            this.scaleZ = this.__scaleZ         = 1
+            this.scale = this.__scale           = 1
+            this.rotationTranslation            = undefined
+            this.dirty                          = true
+        },
 
         update: function () {
 
