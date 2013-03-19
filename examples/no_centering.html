@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+            body {
+                -webkit-perspective: 800px;
+                -moz-perspective: 800px;
+                perspective: 800px;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+            }
+            #test {
+                background-color: #222;
+                color: #fff;
+                width: 400px;
+                padding: 10px 30px;
+            }
+            pre, code {
+                color: #60D9EE;
+            }
+        </style>
+        <script src="libs/dat.gui.min.js"></script>
+        <script src="../src/matrix.js"></script>
+    </head>
+    <body onload="init()">
+        <div id="test">
+            <h1>Disabling auto centering</h1>
+            <p>
+                By default, Matrix.js automatically center objects with the following transform:
+                <pre>translate3d(-50%, -50%, 0)</pre>
+                And every <code>MX.Object3d</code> comes with the class <code>.mx-object3d</code>. So you can auto center all objects inside a container with the following CSS rules:
+                <pre>
+.mx-object3d {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}</pre>
+            </p>
+            <p>
+                But sometimes we simply want to add 3D movement to exsiting DOM nodes without tampering with their positioning. This page shows that you can disable the default centering behaviour by setting:<pre>MX.positionAtCenter = false</pre>
+            </p>
+        </div>
+        <script>
+        function init () {
+
+            MX.rotationUnit = 'deg'
+            MX.positionAtCenter = false // avoid translating original position
+
+            var obj = new MX.Object3D(document.getElementById('test'))
+
+            var controls = {
+                effectOn: true
+            }
+
+            var increment = 0.1
+
+            animate()
+            function animate () {
+                requestAnimationFrame(animate)
+                if (controls.effectOn) {
+                    obj.rotationX += increment
+                    obj.rotationY += increment
+                    obj.rotationZ += increment
+                    if (Math.abs(obj.rotationX) > 5) increment *= -1
+                    obj.update()
+                } else {
+                    obj.reset()
+                    obj.update()
+                }
+            }
+
+            var gui = new dat.GUI()
+            gui.add(controls, 'effectOn')
+        }
+        </script>
+    </body>
+</html>
