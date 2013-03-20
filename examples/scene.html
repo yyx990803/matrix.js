@@ -39,7 +39,7 @@
                 scene.width = 1200
                 scene.height = 600
                 scene.perspective = 600
-                scene.camera.z = -1000
+                //scene.camera.z = -1000
                 scene.camera.follow({
                     x: 0,
                     y: 0,
@@ -52,21 +52,30 @@
                 var coords = new MX.Coords(1000)
                             .addTo(scene)
 
-                animate()
+                //animate()
                 function animate () {
                     requestAnimationFrame(animate)
                     TWEEN.update()
                     scene.update()
                 }
 
-                new TWEEN.Tween(scene.camera)
-                    .to({
-                        x: 0,
-                        y: 500,
-                        z: -1500
-                    }, 3000)
-                    .easing(TWEEN.Easing.Exponential.InOut)
-                    .start()
+                // new TWEEN.Tween(scene.camera)
+                //     .to({
+                //         x: 0,
+                //         y: 500,
+                //         z: -1500
+                //     }, 3000)
+                //     .easing(TWEEN.Easing.Exponential.InOut)
+                //     .start()
+                document.addEventListener('mousedown', function (e) {
+                    
+                })
+                document.addEventListener('mousemove', function (e) {
+
+                })
+                document.addEventListener('mouseup', function (e) {
+                    
+                })
             }
         </script>
     </head>
