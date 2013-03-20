@@ -3,6 +3,7 @@
     <head>
         <title>Martrix.js rubik's cube!</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
         <style>
             html, body {
                 margin: 0;
@@ -27,6 +28,12 @@
                 font-size: 14px;
                 padding: 5px 20px;
             }
+            #buttons {
+                position: absolute;
+                width: 100%;
+                bottom: 15px;
+                text-align: center;
+            }
             .face {
                 width: 100%;
                 height: 100%;
@@ -45,15 +52,7 @@
                 width: 100px;
                 height: 100px;
             }
-            .number {
-                font-size: 20px;
-                line-height: 86px;
-                font-weight: bold;
-                color: #000;
-                display: none;
-                text-align: center;
-            }
-            #cube {
+            #cube, #buttons {
                 -webkit-user-select: none;
             }
             #cube.transparent .face {
@@ -63,14 +62,6 @@
             }
             #cube.transparent .face .sticker {
                 background-color: transparent !important;
-            }
-            #cube.numbers .number {
-                display: block;
-            }
-            .mx-object3d {
-                position: absolute;
-                top: 50%;
-                left: 50%;
             }
         </style>
         <script src="../src/matrix.js"></script>
@@ -82,6 +73,7 @@
                 origin = {x:0, y:0, z:0},
                 ease = TWEEN.Easing.Exponential.InOut,
                 lock = false,
+                auto = false,
                 cublets = []
 
             var faces = {
@@ -131,15 +123,20 @@
 
                     for (var i = 0; i < 6; i++) {
                         var face = new MX.Object3D('.face')
-                        face.el.innerHTML = '<div class="sticker" style="background-color:'
-                            + colors[i]
-                            + '"><div class="number">' + id + '</div></div>'
+                        face.el.innerHTML = '<div class="sticker" style="background-color:'+ colors[i] + '">'
                         this.add(face)
                     }
 
                     // keep track of which face is where
                     // because Euler angles are terrible for rubik's cube.
 
+                    this.resetFaces()
+                    this.update()
+                    this.updateChildren = false
+
+                },
+
+                resetFaces: function () {
                     this.faceOrder = {
                         top     : 0,
                         down  : 1,
@@ -149,16 +146,13 @@
                         back    : 5
                     }
                     this.updateFacePositions()
-                    this.update()
-                    this.updateChildren = false
-
                 },
 
                 updateFacePositions: function () {
 
                     var f = this.faceOrder
                     
-                    var top = this.top       = this.children[f.top]
+                    var top = this.top = this.children[f.top]
                     top.reset()
                     top.rotationX = 90
                     top.y = size / 2
@@ -168,21 +162,21 @@
                     down.rotationX = -90
                     down.y = -size / 2
 
-                    var left = this.left     = this.children[f.left]
+                    var left = this.left = this.children[f.left]
                     left.reset()
                     left.rotationY = -90
                     left.x = -size / 2
 
-                    var right = this.right   = this.children[f.right]
+                    var right = this.right = this.children[f.right]
                     right.reset()
                     right.rotationY = 90
                     right.x = size / 2
 
-                    var front = this.front   = this.children[f.front]
+                    var front = this.front = this.children[f.front]
                     front.reset()
                     front.z = -size / 2
 
-                    var back = this.back     = this.children[f.back]
+                    var back = this.back = this.children[f.back]
                     back.reset()
                     back.rotationY = 180
                     back.z = size / 2
@@ -266,7 +260,7 @@
                     
                 },
 
-                rotate: function (faceName, dir) {
+                rotate: function (faceName, dir, callback) {
 
                     if (lock) return
                     lock = true
@@ -316,21 +310,31 @@
 
                     function done () {
                         lock = false
+                        callback && callback()
                     }
 
                 },
 
-                toggleNumbers: function () {
-                    this.el.classList.toggle('numbers')
-                },
-
                 toggleTransparent: function () {
                     this.el.classList.toggle('transparent')
+                },
+
+                resetCubelets: function () {
+                    if (lock) {
+                        setTimeout(function () {
+                            cube.resetCubelets()
+                        }, 100)
+                        return
+                    }
+                    this.children.forEach(function (c) {
+                        c.resetFaces()
+                    })
                 }
             })
 
             function init () {
                 window.cube = new Cube().addTo('body')
+                cube.scale = Math.min(1, window.innerWidth / 600)
                 initControls()
                 animate()
                 function animate () {
@@ -369,14 +373,9 @@
                 })
 
                 document.addEventListener('keyup', function (e) {
+                    if (auto) return
                     var dir = e.shiftKey ? 1 : -1
                     switch (e.keyCode) {
-                        case 32:
-                            controlTargets = {
-                                rotationX: -25,
-                                rotationY: -25
-                            }
-                            break
                         case 70: // front
                             cube.rotate('front', dir)
                             break
@@ -399,6 +398,45 @@
                             break
                     }
                 })
+            }
+
+            var autobot = {
+
+                start: function () {
+                    console.log('start')
+                    if (lock) {
+                        setTimeout(function () {
+                            autobot.start()
+                        }, 100)
+                    } else {
+                        autobot.next(0)
+                    }
+                },
+
+                next: function (delay) {
+                    if (!delay && delay !== 0) delay = 1000
+                    setTimeout(function () {
+                        if (!auto) return
+                        var face = ['top', 'down', 'front', 'back', 'left', 'right'][Math.floor(Math.random() * 6)]
+                        cube.rotate(face, Math.random() - 0.5, autobot.next)
+                    }, delay)
+                }
+
+            }
+
+            function reset () {
+                controlTargets = {
+                    rotationX: -25,
+                    rotationY: -25
+                }
+                cube.resetCubelets()
+            }
+
+            function toggleAuto () {
+                auto = !auto
+                if (auto) {
+                    autobot.start()
+                }
             }
 
             function updateControls () {
@@ -428,16 +466,24 @@
     <body onload="init()">
         <div id="info">
             <h1>Rubik's Cube powered by Matrix.js</h1>
+            <p>
+                Uppercase for CW, lowercase for CCW.
+                <br>
+                Keys are disabled in auto mode.
+            </p>
             <ul>
-                <li>Uppercase for CW, lowercase for CCW</li>
                 <li>T/t - top</li>
-                <li>D/d - bottom</li>
+                <li>D/d - down</li>
                 <li>L/l - left</li>
                 <li>R/r - right</li>
                 <li>F/f - front</li>
                 <li>B/b - back</li>
-                <li>Space - Reset cube rotation</li>
             </ul>
+        </div>
+        <div id="buttons">
+            <button onclick="toggleAuto()">Auto Mode</button>
+            <button onclick="cube.toggleTransparent()">Toggle Colors</button>
+            <button onclick="reset()">Reset Cube</button>
         </div>
     </body>
 </html>
