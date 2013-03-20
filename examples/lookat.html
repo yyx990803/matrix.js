@@ -33,13 +33,10 @@
                 height: 50%;
                 z-index: 1;
             }
-            #target {
+            .target {
                 width: 10px;
                 height: 10px;
                 background-color: #fff;
-                position: absolute;
-                top: 50%;
-                left: 50%;
                 border-radius: 100%;
             }
             .dg.ac {
@@ -57,75 +54,33 @@
 
                 var container = new MX.Object3D('#container').addTo('#wrapper')
 
-                // var Axis = MX.Object3D.extend({
-                //     init: function (axis, size) {
-
-                //         size = size || 100
-                //         this.el.width = size + 'px'
-                //         this.el.height = '4px'
-
-                //         var label = document.createElement('span')
-                //         label.textContent = axis.toUpperCase()
-                //         label.style.position = 'absolute'
-                //         label.style.right = '0px'
-                //         label.style.bottom = '3px'
-                //         this.el.appendChild(label)
-
-                //         var faceA = new MX.Object3D('.face'),
-                //             faceB = new MX.Object3D('.face')
-                //         faceA.rotationX = 90
-                //         this.add(faceA, faceB)
-
-                //         switch (axis) {
-                //             case 'x':
-                //                 this.el.style.color =
-                //                 faceA.style.backgroundColor = 
-                //                 faceB.style.backgroundColor = '#F33'
-                //                 break
-                //             case 'y':
-                //                 break
-                //             case 'z':
-                //                 break
-                //         }
-                //     }
-                // })
-
-                // var Coords = MX.Object3D.extend({
-                //     init: function () {
-                //         this.el.classList.add('.coords')
-                //         var x = new Axis('x'),
-                //             y = new Axis('y'),
-                //             z = new Axis('z')
-                //         y.rotationZ = -90
-                //         z.rotationY = 90
-                //         this.add(x, y, z)
-                //         this.update()
-                //         this.updateChildren = false
-                //     }
-                // })
-
                 var coords = []
                 for (var i = 0; i < 10; i++) {
-                    var c = new MX.Coords().addTo(container)
+                    var c = new MX.Coords()
                     c.x = Math.random() * 1000 - 500
                     c.y = Math.random() * 600 - 300
                     c.z = Math.random() * 600 - 300
+                    container.add(c)
                     coords.push(c)
-                    c.update()
                 }
+
+                // add a target maker
+                var target = new MX.Object3D(),
+                    face1 = new MX.Object3D('.target'),
+                    face2 = new MX.Object3D('.target')
+                face2.rotationY = 90
+                target.add(face1, face2)
+                target.x = Math.round(Math.random() * 500 - 250)
+                target.y = Math.round(Math.random() * 500 - 250)
+                target.z = Math.round(Math.random() * 500 - 250)
+                container.add(target)
 
                 container.rotationX = -15
                 container.update()
 
-                // add a target maker
-                var target = new MX.Object3D('#target').addTo(container)
-                target.x = Math.round(Math.random() * 500 - 250)
-                target.y = Math.round(Math.random() * 500 - 250)
-                target.z = Math.round(Math.random() * 500 - 250)
-                target.update()
-
-                var state = {}
-                state.autoRotate = false
+                var state = {
+                    autoRotate: false
+                }
 
                 var gui = new dat.GUI()
                 gui.add(target, 'x', -500, 500)

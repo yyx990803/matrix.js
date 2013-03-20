@@ -14,6 +14,7 @@ MX.Coords = (function () {
             label.style.position = 'absolute'
             label.style.right = '0px'
             label.style.bottom = '3px'
+            label.style.fontSize = Math.round(size / 10) + 'px'
             this.el.appendChild(label)
 
             var faceA = new MX.Object3D(),
