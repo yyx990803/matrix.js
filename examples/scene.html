@@ -26,10 +26,12 @@
                 transform: translate3d(-50%, -50%, 0);
             }
         </style>
-        <script src="../src/matrix.js"></script>
+        <script src="../src/mx.js"></script>
+        <script src="../src/mx.scene.js"></script>
+        <script src="../src/mx.box.js"></script>
+        <script src="../src/mx.coords.js"></script>
+        <script src="../src/mx.trackballControl.js"></script>
         <script src="libs/tween.min.js"></script>
-        <script src="libs/mx.box.js"></script>
-        <script src="libs/mx.coords.js"></script>
         <script>
             function init () {
 
@@ -38,44 +40,34 @@
                 var scene = new MX.Scene().addTo('body')
                 scene.width = 1200
                 scene.height = 600
-                scene.perspective = 600
-                //scene.camera.z = -1000
-                scene.camera.follow({
-                    x: 0,
-                    y: 0,
-                    z: 0
-                })
+                scene.perspective = 1000
+                scene.camera.z = -1000
 
                 var box = new MX.Box(300, 'rgba(0, 255, 122, .1)', '#0f3')
-                            .addTo(scene)
+                scene.add(box)
 
                 var coords = new MX.Coords(1000)
-                            .addTo(scene)
+                scene.add(coords)
 
-                //animate()
+                var control = MX.trackballControl
+                control.init(scene.camera)
+
+                animate()
                 function animate () {
                     requestAnimationFrame(animate)
+                    control.update()
                     TWEEN.update()
                     scene.update()
                 }
 
-                // new TWEEN.Tween(scene.camera)
-                //     .to({
-                //         x: 0,
-                //         y: 500,
-                //         z: -1500
-                //     }, 3000)
-                //     .easing(TWEEN.Easing.Exponential.InOut)
-                //     .start()
-                document.addEventListener('mousedown', function (e) {
-                    
-                })
-                document.addEventListener('mousemove', function (e) {
-
-                })
-                document.addEventListener('mouseup', function (e) {
-                    
-                })
+                new TWEEN.Tween(scene.camera)
+                    .to({
+                        x: 0,
+                        y: 500,
+                        z: -1000
+                    }, 3000)
+                    .easing(TWEEN.Easing.Exponential.InOut)
+                    .start()
             }
         </script>
     </head>

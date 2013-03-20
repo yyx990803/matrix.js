@@ -67,9 +67,9 @@
                 background-color: transparent !important;
             }
         </style>
-        <script src="../src/matrix.js"></script>
+        <script src="../src/mx.js"></script>
+        <script src="../src/mx.trackballControl.js"></script>
         <script src="libs/tween.min.js"></script>
-        <script src="libs/mx.trackballControl.js"></script>
         <script>
 
             MX.rotationUnit = 'deg'
@@ -256,7 +256,7 @@
                         c.x = x * size
                         c.y = y * size
                         c.z = z * size
-                        c.setRotationOrigin(origin)
+                        c.rotationOrigin = origin
 
                         cublets.push(c)
                         this.add(c)
@@ -381,51 +381,6 @@
                             break
                     }
                 })
-
-                // var down = false,
-                //     lastX, lastY
-
-                // document.addEventListener('mousedown', onDown)
-                // document.addEventListener('mousemove', onMove)
-                // document.addEventListener('mouseup', onUp)
-                // document.addEventListener('touchstart', onDown)
-                // document.addEventListener('touchmove', onMove)
-                // document.addEventListener('touchend', onUp)
-
-                // function onDown (e) {
-                //     e = normalizeEvent(e)
-                //     if (!e) return
-                //     down = true
-                //     lastX = e.pageX
-                //     lastY = e.pageY
-                // }
-
-                // function onMove (e) {
-                //     if (e.type = 'touchmove') {
-                //         e.preventDefault()
-                //     }
-                //     e = normalizeEvent(e)
-                //     if (!e) return
-                //     if (!down) return
-                //     var dx = e.pageX - lastX,
-                //         dy = e.pageY - lastY
-                //     controlTargets.rotationX -= dy / 2,
-                //     controlTargets.rotationY += dx / 2
-                //     lastX = e.pageX
-                //     lastY = e.pageY
-                // }
-
-                // function onUp () {
-                //     down = false
-                // }
-
-                // function normalizeEvent (e) {
-                //     if (e.touches) {
-                //         return e.touches.length > 1 ? false : e.touches[0]
-                //     } else {
-                //         return e
-                //     }
-                // }
             }
 
             var autobot = {
@@ -453,10 +408,8 @@
             }
 
             function reset () {
-                controlTargets = {
-                    rotationX: -25,
-                    rotationY: -25
-                }
+                MX.trackballControl.target.rotationX = -25
+                MX.trackballControl.target.rotationY = -25
                 cube.resetCubelets()
             }
 
@@ -466,21 +419,6 @@
                     autobot.start()
                 }
             }
-
-            // function updateControls () {
-            //     var dx = controlTargets.rotationX - cube.rotationX,
-            //         dy = controlTargets.rotationY - cube.rotationY
-            //     if (Math.abs(dx) < 0.01) {
-            //         cube.rotationX = controlTargets.rotationX
-            //     } else {
-            //         cube.rotationX += dx / 8
-            //     }
-            //     if (Math.abs(dy) < 0.01) {
-            //         cube.rotationY = controlTargets.rotationY
-            //     } else {
-            //         cube.rotationY += dy / 8
-            //     }
-            // }
 
             function clone (obj) {
                 var ret = {}

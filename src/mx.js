@@ -54,11 +54,11 @@ var MX = MX || (function (undefined) {
             'msTransform' in s ? 'ms' : null
 
         var t = MX.prefix ? MX.prefix + 'T' : 't'
-        transformProp       = t + 'ransform'
-        transitionProp      = t + 'ransition'
-        transformOriginProp = t + 'ransformOrigin'
-        transformStyleProp  = t + 'ransformStyle'
-        perspectiveProp     = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
+        transformProp       = MX.transformProp       = t + 'ransform'
+        transitionProp      = MX.transitionProp      = t + 'ransition'
+        transformOriginProp = MX.transformOriginProp = t + 'ransformOrigin'
+        transformStyleProp  = MX.transformStyleProp  = t + 'ransformStyle'
+        perspectiveProp     = MX.perspectiveProp     = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
 
         var vendors = ['webkit', 'moz', 'ms']
         for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -99,6 +99,21 @@ var MX = MX || (function (undefined) {
         return deg / 180 * Math.PI
     }
 
+    function buildRotationTranslation (obj) {
+        var origin = obj.rotationOrigin,
+            trans = {}
+        if (!origin) {
+            trans.before = trans.after = ''
+        } else {
+            var dx = origin.x - obj.x,
+                dy = -(origin.y - obj.y),
+                dz = -(origin.z - obj.z)
+            trans.before = 'translate3d(' + dx +'px,' + dy + 'px,' + dz + 'px) '
+            trans.after = 'translate3d(' + (-dx) + 'px,' + (-dy) + 'px,' + (-dz) + 'px) '
+        }
+        return trans
+    }
+
     // ========================================================================
     //  Base Object3D
     // ========================================================================
@@ -131,8 +146,9 @@ var MX = MX || (function (undefined) {
             this.scaleY = this.__scaleY         = 1
             this.scaleZ = this.__scaleZ         = 1
             this.scale = this.__scale           = 1
-            this.rotationTranslation            = undefined
-            this.followTarget                     = undefined
+            this.rotationOrigin                 = undefined
+            this.followTarget                   = undefined
+            this.transformString                = ''
             this.dirty                          = true
             this.update()
         },
@@ -213,7 +229,14 @@ var MX = MX || (function (undefined) {
             }
 
             if (this.dirty && this.el) {
-                this.el.style[transformProp] = (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '')
+
+                var rotationTranslation = buildRotationTranslation(this),
+                    rotation = 'rotateX(' + this.rotationX.toFixed(floatPrecision) + MX.rotationUnit + ') '
+                        + 'rotateY(' + this.rotationY.toFixed(floatPrecision) + MX.rotationUnit + ') '
+                        + 'rotateZ(' + this.rotationZ.toFixed(floatPrecision) + MX.rotationUnit + ') '
+
+                this.transformString =
+                    (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '')
                     + 'translate3d('
                         + this.x.toFixed(floatPrecision) + 'px,'
                         + (-this.y).toFixed(floatPrecision) + 'px,'
@@ -222,11 +245,17 @@ var MX = MX || (function (undefined) {
                         + this.scaleX.toFixed(floatPrecision) + ','
                         + this.scaleY.toFixed(floatPrecision) + ','
                         + this.scaleZ.toFixed(floatPrecision) + ') '
-                    + (this.rotationTranslation ? this.rotationTranslation.before : '')
-                    + 'rotateX(' + this.rotationX.toFixed(floatPrecision) + MX.rotationUnit + ') '
-                    + 'rotateY(' + this.rotationY.toFixed(floatPrecision) + MX.rotationUnit + ') '
-                    + 'rotateZ(' + this.rotationZ.toFixed(floatPrecision) + MX.rotationUnit + ') '
-                    + (this.rotationTranslation ? this.rotationTranslation.after : '')
+
+                if (rotationTranslation) {
+                    this.transformString += rotationTranslation.before
+                        + rotation
+                        + rotationTranslation.after
+
+                } else {
+                    this.transformString += rotation
+                }
+                    
+                this.el.style[transformProp] = this.transformString
                 this.dirty = false
             }
 
@@ -300,21 +329,6 @@ var MX = MX || (function (undefined) {
             return this
         },
 
-        setRotationOrigin: function (origin) {
-            if (!origin) {
-                this.rotationTranslation = undefined
-                return this
-            }
-            var dx = origin.x - this.x,
-                dy = -(origin.y - this.y),
-                dz = -(origin.z - this.z)
-            this.rotationTranslation = {
-                before: 'translate3d(' + dx +'px,' + dy + 'px,' + dz + 'px) ',
-                after: 'translate3d(' + (-dx) + 'px,' + (-dy) + 'px,' + (-dz) + 'px) '
-            }
-            return this
-        },
-
         setCSSTransformOrigin: function (origin) {
             this.el && (this.el.style[transformOriginProp] = origin)
             return this
@@ -332,115 +346,6 @@ var MX = MX || (function (undefined) {
 
         setCSSPerspective: function (pers) {
             this.el && (this.el.style[perspectiveProp] = pers)
-            return this
-        }
-
-    }
-
-    // ========================================================================
-    //  Scene
-    // ========================================================================
-
-    function Scene () {
-
-        this.el = document.createElement('div')
-        this.el.classList.add('mx-scene')
-
-        this.el.style.overflow = 'hidden'
-        this.el.style[transformProp] = 'preserve-3d'
-        this.el.style.WebkitPerspectiveOrigin = '50% 50%'
-        this.el.style.MozPerspectiveOrigin = '50% 50%'
-        this.el.style.perspectiveOrigin = '50% 50%'
-
-        this.inner = new Object3D().addTo(this.el)
-        this.inner.el.style.width = '0'
-        this.inner.el.style.height = '0'
-
-        var self = this
-        var width, height, perspective
-
-        Object.defineProperty(this, 'width', {
-            get: function () {
-                return width
-            },
-            set: function (val) {
-                if (typeof val !== 'number') return
-                width = val
-                self.el.style.width = val + 'px'
-            }
-        })
-
-        Object.defineProperty(this, 'height', {
-            get: function () {
-                return height
-            },
-            set: function (val) {
-                if (typeof val !== 'number') return
-                height = val
-                self.el.style.height = val + 'px'
-            }
-        })
-
-        Object.defineProperty(this, 'perspective', {
-            get: function () {
-                return perspective
-            },
-            set: function (val) {
-                if (typeof val !== 'number') return
-                perspective = val
-                self.el.style[perspectiveProp] = val + 'px'
-                self.inner.z = -val - self.camera.z
-            }
-        })
-
-        this.camera = new Object3D()
-        this.camera.el = null
-
-    }
-
-    Scene.prototype = {
-
-        constructor: Scene,
-
-        add: function () {
-            Object3D.prototype.add.apply(this.inner, arguments)
-            return this
-        },
-
-        remove: function () {
-            Object3D.prototype.remove.apply(this.inner, arguments)
-            return this
-        },
-
-        addTo: function (target) {
-            if (typeof target === 'string') {
-                target = document.querySelector(target)
-            }
-            if (target instanceof HTMLElement && target.appendChild) {
-                target.appendChild(this.el)
-            } else {
-                console.warn('You can only add a Scene to an HTML element.')
-            }
-            return this
-        },
-
-        update: function () {
-            // update inner based on camera
-
-            var i = this.inner,
-                c = this.camera
-
-            c.update()
-
-            i.z = -this.perspective - c.z
-            i.x = -c.x
-            i.y = -c.y
-
-            i.rotationX = -c.rotationX
-            i.rotationY = -c.rotationY
-            i.rotationZ = -c.rotationZ
-
-            i.update()
             return this
         }
 
@@ -473,7 +378,6 @@ var MX = MX || (function (undefined) {
     // ========================================================================
 
     MX.Object3D = Object3D
-    MX.Scene = Scene
 
     // center positioning getter setter
     Object.defineProperty(MX, 'positionAtCenter', {

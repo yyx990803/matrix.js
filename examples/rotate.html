@@ -57,7 +57,7 @@
                 border-radius: 100%;
             }
         </style>
-        <script src="../src/matrix.js"></script>
+        <script src="../src/mx.js"></script>
         <script src="libs/dat.gui.min.js"></script>
         <script>
             function init () {
@@ -120,7 +120,7 @@
                 origin.x = 141
                 origin.update()
 
-                box.setRotationOrigin(origin)
+                box.rotationOrigin = origin
 
                 var rotations = {
                     x: false,
@@ -144,7 +144,6 @@
                 function animate () {
                     requestAnimationFrame(animate)
                     origin.update()
-                    box.setRotationOrigin(origin)
                     if (rotations.x) {
                         box.rotationX += 1
                     }
