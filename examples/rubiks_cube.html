@@ -8,9 +8,12 @@
             html, body {
                 margin: 0;
                 height: 100%;
+                overflow: hidden;
             }
             body {
                 -webkit-perspective: 600px;
+                -moz-perspective: 600px;
+                perspective: 600px;
                 background-color: #000;
                 font-family: 'Helvetica Neue', Arial, sans-serif;
             }
@@ -351,26 +354,16 @@
             }
 
             function initControls () {
+
                 var down = false,
                     lastX, lastY
 
-                document.addEventListener('mousedown', function (e) {
-                    down = true
-                    lastX = e.pageX
-                    lastY = e.pageY
-                })
-                document.addEventListener('mousemove', function (e) {
-                    if (!down) return
-                    var dx = e.pageX - lastX,
-                        dy = e.pageY - lastY
-                    controlTargets.rotationX -= dy / 2,
-                    controlTargets.rotationY += dx / 2
-                    lastX = e.pageX
-                    lastY = e.pageY
-                })
-                document.addEventListener('mouseup', function (e) {
-                    down = false
-                })
+                document.addEventListener('mousedown', onDown)
+                document.addEventListener('mousemove', onMove)
+                document.addEventListener('mouseup', onUp)
+                document.addEventListener('touchstart', onDown)
+                document.addEventListener('touchmove', onMove)
+                document.addEventListener('touchend', onUp)
 
                 document.addEventListener('keyup', function (e) {
                     if (auto) return
@@ -398,6 +391,33 @@
                             break
                     }
                 })
+
+                function onDown (e) {
+                    e = normalizeEvent(e)
+                    if (!e) return
+                    down = true
+                    lastX = e.pageX
+                    lastY = e.pageY
+                }
+
+                function onMove (e) {
+                    if (e.type = 'touchmove') {
+                        e.preventDefault()
+                    }
+                    e = normalizeEvent(e)
+                    if (!e) return
+                    if (!down) return
+                    var dx = e.pageX - lastX,
+                        dy = e.pageY - lastY
+                    controlTargets.rotationX -= dy / 2,
+                    controlTargets.rotationY += dx / 2
+                    lastX = e.pageX
+                    lastY = e.pageY
+                }
+
+                function onUp () {
+                    down = false
+                }
             }
 
             var autobot = {
@@ -422,6 +442,14 @@
                     }, delay)
                 }
 
+            }
+
+            function normalizeEvent (e) {
+                if (e.touches) {
+                    return e.touches.length > 1 ? false : e.touches[0]
+                } else {
+                    return e
+                }
             }
 
             function reset () {
