@@ -29,6 +29,7 @@
         <script src="../src/matrix.js"></script>
         <script src="libs/tween.min.js"></script>
         <script src="libs/mx.box.js"></script>
+        <script src="libs/mx.coords.js"></script>
         <script>
             function init () {
 
@@ -45,23 +46,24 @@
                     z: 0
                 })
 
-                var testObject = new MX.Box(300, 'rgba(255, 0, 0, .3)', '#fff')
-                                    .addTo(scene)
+                var box = new MX.Box(300, 'rgba(0, 255, 122, .1)', '#0f3')
+                            .addTo(scene)
+
+                var coords = new MX.Coords(1000)
+                            .addTo(scene)
 
                 animate()
                 function animate () {
                     requestAnimationFrame(animate)
-                    // testObject.rotationX += .5
-                    // // testObject.rotationY += .5
                     TWEEN.update()
                     scene.update()
                 }
 
                 new TWEEN.Tween(scene.camera)
                     .to({
-                        x: 300,
-                        y: 300,
-                        z: -2000
+                        x: 0,
+                        y: 500,
+                        z: -1500
                     }, 3000)
                     .easing(TWEEN.Easing.Exponential.InOut)
                     .start()

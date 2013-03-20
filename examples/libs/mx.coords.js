@@ -25,8 +25,13 @@ MX.Coords = (function () {
             faceA.el.style.backgroundColor = 
             faceB.el.style.backgroundColor = colors[axis]
 
-            this.el.width = faceA.el.width = faceB.el.width = size + 'px'
-            this.el.height = faceA.el.height = faceB.el.height = '4px'
+            this.el.style.width =
+            faceA.el.style.width =
+            faceB.el.style.width = size + 'px'
+
+            this.el.style.height =
+            faceA.el.style.height =
+            faceB.el.style.height = Math.round(size / 100) + 'px'
 
             if (axis === 'y') {
                 this.rotationZ = -90

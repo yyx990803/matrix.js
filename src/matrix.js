@@ -395,7 +395,6 @@ var MX = MX || (function (undefined) {
 
         this.camera = new Object3D()
         this.camera.el = null
-        this.inner.setRotationOrigin(this.camera)
 
     }
 
