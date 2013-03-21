@@ -1,4 +1,4 @@
-MX.controls = (function () {
+MX.rotationControl = (function () {
 
     var object,
         locked      = false
@@ -21,7 +21,7 @@ MX.controls = (function () {
         upperBoundY : undefined,
         lowerBoundY : undefined,
 
-        preset: function (name) {
+        usePreset: function (name) {
             var ops = presets[name]
             if (ops) {
                 if (currentPreset && presets[currentPreset].teardown) {
@@ -39,7 +39,7 @@ MX.controls = (function () {
 
     var currentPreset
     var presets = {
-        fps: {
+        firstPerson: {
             drag: false,
             ease: 4,
             sensitivity: .2,

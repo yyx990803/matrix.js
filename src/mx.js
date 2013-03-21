@@ -100,18 +100,18 @@ var MX = MX || (function (undefined) {
     }
 
     function buildRotationTranslation (obj) {
-        var origin = obj.rotationOrigin,
-            trans = {}
+        var origin = obj.rotationOrigin
         if (!origin) {
-            trans.before = trans.after = ''
+            return
         } else {
             var dx = origin.x - obj.x,
                 dy = -(origin.y - obj.y),
                 dz = -(origin.z - obj.z)
-            trans.before = 'translate3d(' + dx +'px,' + dy + 'px,' + dz + 'px) '
-            trans.after = 'translate3d(' + (-dx) + 'px,' + (-dy) + 'px,' + (-dz) + 'px) '
+            return {
+                before: 'translate3d(' + dx +'px,' + dy + 'px,' + dz + 'px) ',
+                after: 'translate3d(' + (-dx) + 'px,' + (-dy) + 'px,' + (-dz) + 'px) '
+            }
         }
-        return trans
     }
 
     // ========================================================================

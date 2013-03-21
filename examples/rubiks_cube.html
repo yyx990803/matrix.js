@@ -57,18 +57,19 @@
             }
             #cube, #buttons {
                 -webkit-user-select: none;
+                -moz-user-select: none;
+                user-select: none;
             }
             #cube.transparent .face {
-                background-color: rgba(0,160,127,.05);
-                border: 1px solid rgba(0,160,127,.8);
-                box-shadow: 0 0 12px rgba(0,160,127,.33);
+                background-color: rgba(0, 255, 122, .1);
+                border: 1px solid #0f3;
             }
             #cube.transparent .face .sticker {
                 background-color: transparent !important;
             }
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.controls.js"></script>
+        <script src="../src/mx.rotationControl.js"></script>
         <script src="libs/tween.min.js"></script>
         <script>
 
@@ -80,7 +81,7 @@
                 lock = false,
                 auto = false,
                 cublets = [],
-                controls = MX.controls
+                controls = MX.rotationControl
 
             var faces = {
                 front: {
