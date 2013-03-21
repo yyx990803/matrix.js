@@ -17,6 +17,9 @@
                 -webkit-perspective: 600px;
                 -moz-perspective: 600px;
                 perspective: 600px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                user-select: none;
             }
 
             a {
@@ -75,7 +78,7 @@
                 left: 50%;
             }
 
-            #scene {
+            #container {
                 z-index: 1;
             }
 
@@ -116,6 +119,7 @@
 
         </style>
         <script src="../src/mx.js"></script>
+        <script src="../src/mx.rotationControl.js"></script>
         <script src="libs/tween.min.js"></script>
         <script src="libs/stats.min.js"></script>
         <script>
@@ -241,8 +245,9 @@
                 [ "Uuo", "Ununoctium", "(294)", 18, 7 ]
             ]
 
-            var scene,
+            var container,
                 stats,
+                controls = MX.rotationControl,
                 targets = {
                     table: [],
                     sphere: [],
@@ -259,10 +264,12 @@
                 stats.domElement.style.top = '0px'
                 document.body.appendChild(stats.domElement)
 
-                // scene
-                scene = new MX.Object3D('#scene').addTo('body')
-                scene.z = 1500
-                scene.update()
+                container = new MX.Object3D('#container').addTo('body')
+                container.z = 1500
+                container.update()
+
+                // controls
+                controls.init(container)
 
                 for ( var i = 0; i < table.length; i ++ ) {
 
@@ -291,12 +298,12 @@
                     object.x = Math.random() * 4000 - 2000
                     object.y = Math.random() * 4000 - 2000
                     object.z = Math.random() * 4000 - 2000
-                    scene.add( object )
+                    container.add( object )
 
                 }
 
                 // table
-                for ( var i = 0; i < scene.children.length; i ++ ) {
+                for ( var i = 0; i < container.children.length; i ++ ) {
 
                     var item = table[i]
 
@@ -313,7 +320,7 @@
 
                 // sphere
 
-                for ( var i = 0, l = scene.children.length; i < l; i ++ ) {
+                for ( var i = 0, l = container.children.length; i < l; i ++ ) {
 
                     var phi = Math.acos( -1 + ( 2 * i ) / l )
                     var theta = Math.sqrt( l * Math.PI ) * phi
@@ -341,7 +348,7 @@
 
                 // helix
 
-                for ( var i = 0, l = scene.children.length; i < l; i ++ ) {
+                for ( var i = 0, l = container.children.length; i < l; i ++ ) {
 
                     var phi = i * 0.175 + Math.PI
 
@@ -368,7 +375,7 @@
 
                 // grid
 
-                for ( var i = 0; i < scene.children.length; i ++ ) {
+                for ( var i = 0; i < container.children.length; i ++ ) {
 
                     var object = {
                         rotationX: 0,
@@ -397,8 +404,8 @@
 
                 TWEEN.removeAll()
 
-                for (var i = 0; i < scene.children.length; i++) {
-                    var object = scene.children[i],
+                for (var i = 0; i < container.children.length; i++) {
+                    var object = container.children[i],
                         target = t[i]
 
                     new TWEEN.Tween(object)
@@ -411,9 +418,10 @@
             function animate () {
                 stats.begin()
                 requestAnimationFrame( animate )
+                controls.update()
                 TWEEN.update()
-                scene.rotationY += Math.PI / 180 / 10
-                scene.update()
+                //container.rotationY += Math.PI / 180 / 10
+                container.update()
                 stats.end()
             }
         </script>

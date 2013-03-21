@@ -5,7 +5,6 @@ MX.rotationControl = (function () {
 
     var down        = false,
         active      = false,
-        inverse     = false,
         lastX,
         lastY
 
@@ -14,6 +13,8 @@ MX.rotationControl = (function () {
         sensitivity : .4,
         ease        : 10,
         drag        : true,
+        inverseX    : false,
+        inverseY    : false,
         rotationX   : 0,
         rotationY   : 0,
         upperBoundX : undefined,
@@ -43,28 +44,26 @@ MX.rotationControl = (function () {
             drag: false,
             ease: 4,
             sensitivity: .2,
+            inverseX: true,
+            inverseY: true,
             upperBoundX: 90,
             lowerBoundX: -90
         }
     }
 
-    function init (obj, ops) {
+    function init (obj, lis) {
         if (active) return
 
         object = obj
         pub.rotationX = object.rotationX
         pub.rotationY = object.rotationY
 
-        ops = ops || {}
-        if (ops.inverse) {
-            inverse = true
-        }
-        if (ops.listener instanceof HTMLElement) {
-            listener = ops.listener
-        } else if (ops.listener instanceof MX.Object3D) {
-            listener = ops.listener.el
+        if (lis instanceof HTMLElement) {
+            listener = lis
+        } else if (lis instanceof MX.Object3D) {
+            listener = lis.el
         } else {
-            listener = document
+            listener = window.document
         }
 
         listener.addEventListener('mousedown', onDown)
@@ -108,16 +107,14 @@ MX.rotationControl = (function () {
         lastY = lastY || e.pageY
         var dx = e.pageX - lastX,
             dy = e.pageY - lastY
-        if (inverse) {
-            dx = -dx
-            dy = -dy
-        }
+        if (pub.inverseX) dx = -dx
+        if (pub.inverseY) dy = -dy
         if (MX.rotationUnit !== 'deg') {
             dx = MX.toRad(dx)
             dy = MX.toRad(dy)
         }
-        pub.rotationX += dy * pub.sensitivity,
-        pub.rotationY -= dx * pub.sensitivity
+        pub.rotationX -= dy * pub.sensitivity,
+        pub.rotationY += dx * pub.sensitivity
         if (pub.upperBoundX) pub.rotationX = Math.min(pub.rotationX, pub.upperBoundX)
         if (pub.lowerBoundX) pub.rotationX = Math.max(pub.rotationX, pub.lowerBoundX)
         if (pub.upperBoundY) pub.rotationY = Math.min(pub.rotationY, pub.upperBoundY)
