@@ -34,10 +34,12 @@ MX.Coords = (function () {
             faceA.el.style.height =
             faceB.el.style.height = Math.round(size / 100) + 'px'
 
+            var angle = MX.rotationUnit === 'deg' ? 90 : (Math.PI / 2)
+
             if (axis === 'y') {
-                this.rotationZ = -90
+                this.rotationZ = -angle
             } else if (axis === 'z') {
-                this.rotationY = 90
+                this.rotationY = angle
             }
         }
     })

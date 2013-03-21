@@ -17,7 +17,7 @@ MX.rotationControl = (function () {
 
     var pub = {
 
-        sensitivity : .4,
+        sensitivity : .5,
         ease        : 10,
         drag        : true,
         inverseX    : false,
@@ -50,12 +50,12 @@ MX.rotationControl = (function () {
     var presets = {
         firstPerson: {
             drag: false,
-            ease: 4,
-            sensitivity: .2,
+            ease: 2,
+            sensitivity: .18,
             inverseX: true,
             inverseY: true,
-            upperBoundX: 90,
-            lowerBoundX: -90
+            upperBoundX: MX.rotationUnit === 'deg' ? 90 : Math.PI / 2,
+            lowerBoundX: MX.rotationUnit === 'deg' ? -90 : -Math.PI / 2
         }
     }
 
@@ -182,12 +182,12 @@ MX.rotationControl = (function () {
         if (!object || locked) return
         var dx = pub.rotationX - object.rotationX,
             dy = pub.rotationY - object.rotationY
-        if (Math.abs(dx) < 0.01) {
+        if (Math.abs(dx) < 0.0001) {
             object.rotationX = pub.rotationX
         } else {
             object.rotationX += dx / pub.ease
         }
-        if (Math.abs(dy) < 0.01) {
+        if (Math.abs(dy) < 0.0001) {
             object.rotationY = pub.rotationY
         } else {
             object.rotationY += dy / pub.ease

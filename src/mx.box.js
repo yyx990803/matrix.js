@@ -10,20 +10,22 @@ MX.Box = MX.Object3D.extend({
         // an Object3D's associated DOM node is the "el" property
         this.el.classList.add('box')
 
+        var angle = MX.rotationUnit === 'deg' ? 90 : (Math.PI / 2)
+
         var top = this.top = new MX.Object3D('.face')
-        top.rotationX = 90
+        top.rotationX = angle
         top.y = size / 2
 
         var bottom = this.bottom = new MX.Object3D('.face')
-        bottom.rotationX = -90
+        bottom.rotationX = -angle
         bottom.y = -size / 2
 
         var left = this.left = new MX.Object3D('.face')
-        left.rotationY = -90
+        left.rotationY = -angle
         left.x = -size / 2
 
         var right = this.right = new MX.Object3D('.face')
-        right.rotationY = 90
+        right.rotationY = angle
         right.x = size / 2
 
         var front = this.front = new MX.Object3D('.face')
