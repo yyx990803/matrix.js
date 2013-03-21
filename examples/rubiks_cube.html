@@ -351,9 +351,9 @@
 
             function initControls () {
 
-                MX.trackballControl.init(cube, true) // inverse axis
-                MX.trackballControl.target.rotationX = -25
-                MX.trackballControl.target.rotationY = -25
+                MX.trackballControl.init(cube, document, true) // inverse axis
+                MX.trackballControl.rotationX = -25
+                MX.trackballControl.rotationY = -25
 
                 document.addEventListener('keyup', function (e) {
                     if (auto) return

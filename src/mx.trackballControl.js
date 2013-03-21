@@ -1,46 +1,58 @@
 MX.trackballControl = (function () {
 
-    var obj,
+    var object,
         locked = false
-
-    var target = {
-        rotationX: 0,
-        rotationY: 0
-    }
 
     var down = false,
         lastX, lastY,
         active = false,
         inverse = false
 
-    function init (tar, inv) {
+    var pub = {
+        sensitivity: .5,
+        ease: 8,
+        rotationX: 0,
+        rotationY: 0
+    }
+
+    function init (obj, lis, inv) {
         if (active) return
-        bind(tar)
-        if (inv === true) inverse = true
-        document.addEventListener('mousedown', onDown)
-        document.addEventListener('mousemove', onMove)
-        document.addEventListener('mouseup', onUp)
-        document.addEventListener('touchstart', onDown)
-        document.addEventListener('touchmove', onMove)
-        document.addEventListener('touchend', onUp)
+
+        object = obj
+        pub.rotationX = object.rotationX
+        pub.rotationY = object.rotationY
+
+        if (inv === true) {
+            inverse = true
+        }
+
+        if (lis instanceof HTMLElement) {
+            listener = lis
+        } else if (lis instanceof MX.Object3D) {
+            listener = lis.el
+        } else {
+            listener = document
+        }
+
+        listener.addEventListener('mousedown', onDown)
+        listener.addEventListener('mousemove', onMove)
+        listener.addEventListener('mouseup', onUp)
+        listener.addEventListener('touchstart', onDown)
+        listener.addEventListener('touchmove', onMove)
+        listener.addEventListener('touchend', onUp)
+
         active = true
     }
 
     function remove () {
         if (!active) return
-        document.removeEventListener('mousedown', onDown)
-        document.removeEventListener('mousemove', onMove)
-        document.removeEventListener('mouseup', onUp)
-        document.removeEventListener('touchstart', onDown)
-        document.removeEventListener('touchmove', onMove)
-        document.removeEventListener('touchend', onUp)
+        listener.removeEventListener('mousedown', onDown)
+        listener.removeEventListener('mousemove', onMove)
+        listener.removeEventListener('mouseup', onUp)
+        listener.removeEventListener('touchstart', onDown)
+        listener.removeEventListener('touchmove', onMove)
+        listener.removeEventListener('touchend', onUp)
         active = false
-    }
-
-    function bind (tar) {
-        obj = tar
-        target.rotationX = obj.rotationX
-        target.rotationY = obj.rotationY
     }
 
     function onDown (e) {
@@ -64,8 +76,12 @@ MX.trackballControl = (function () {
             dx = -dx
             dy = -dy
         }
-        target.rotationX += dy / 2,
-        target.rotationY -= dx / 2
+        if (MX.rotationUnit !== 'deg') {
+            dx = MX.toRad(dx)
+            dy = MX.toRad(dy)
+        }
+        pub.rotationX += dy * pub.sensitivity,
+        pub.rotationY -= dx * pub.sensitivity
         lastX = e.pageX
         lastY = e.pageY
     }
@@ -83,18 +99,18 @@ MX.trackballControl = (function () {
     }
 
     function update () {
-        if (!obj || locked) return
-        var dx = target.rotationX - obj.rotationX,
-            dy = target.rotationY - obj.rotationY
+        if (!object || locked) return
+        var dx = pub.rotationX - object.rotationX,
+            dy = pub.rotationY - object.rotationY
         if (Math.abs(dx) < 0.01) {
-            obj.rotationX = target.rotationX
+            object.rotationX = pub.rotationX
         } else {
-            obj.rotationX += dx / 8
+            object.rotationX += dx / pub.ease
         }
         if (Math.abs(dy) < 0.01) {
-            obj.rotationY = target.rotationY
+            object.rotationY = pub.rotationY
         } else {
-            obj.rotationY += dy / 8
+            object.rotationY += dy / pub.ease
         }
     }
 
@@ -103,20 +119,16 @@ MX.trackballControl = (function () {
     }
 
     function unlock () {
-        target.rotationX = obj.rotationX
-        target.rotationY = obj.rotationY
+        pub.rotationX = object.rotationX
+        pub.rotationY = object.rotationY
         locked = false
     }
 
-    var pub = {
-        init: init,
-        remove: remove,
-        bind: bind,
-        update: update,
-        target: target,
-        lock: lock,
-        unlock: unlock
-    }
+    pub.init    = init
+    pub.remove  = remove
+    pub.update  = update
+    pub.lock    = lock
+    pub.unlock  = unlock
 
     return pub
 
