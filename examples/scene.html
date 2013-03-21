@@ -41,7 +41,10 @@
                 scene.width = 1200
                 scene.height = 600
                 scene.perspective = 1000
-                scene.camera.z = -1000
+
+                var cam = scene.camera
+                cam.z = -1000
+                cam.x = 500
 
                 var box = new MX.Box(300, 'rgba(0, 255, 122, .1)', '#0f3')
                 scene.add(box)
@@ -50,7 +53,7 @@
                 scene.add(coords)
 
                 var control = MX.trackballControl
-                control.init(scene.camera)
+                control.init(cam)
 
                 animate()
                 function animate () {
@@ -60,14 +63,23 @@
                     scene.update()
                 }
 
-                new TWEEN.Tween(scene.camera)
-                    .to({
-                        x: 0,
-                        y: 500,
-                        z: -1000
-                    }, 3000)
-                    .easing(TWEEN.Easing.Exponential.InOut)
-                    .start()
+                // control.lock()
+                // new TWEEN.Tween(cam)
+                //     .to({
+                //         x: 1000,
+                //         y: 1000,
+                //         z: -1000,
+                //         rotationX: 35.2644,
+                //         rotationY: 45
+                //     }, 3000)
+                //     .easing(TWEEN.Easing.Exponential.InOut)
+                //     .start()
+                //     .onUpdate(function () {
+                //         cam.lookAt(box)
+                //     })
+                //     .onComplete(function () {
+                //         control.unlock()
+                //     })
             }
         </script>
     </head>

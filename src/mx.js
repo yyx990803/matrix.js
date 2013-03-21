@@ -128,6 +128,8 @@ var MX = MX || (function (undefined) {
         this.children       = []
         this.updateChildren = true
 
+        this.inverseLookAt  = false
+
         this.reset()
     }
 
@@ -278,6 +280,11 @@ var MX = MX || (function (undefined) {
                 dx = target.x - this.x,
                 dy = target.y - this.y,
                 dz = target.z - this.z
+            if (this.inverseLookAt) {
+                dx = -dx
+                dy = -dy
+                dz = -dz
+            }
             if (dz === 0) dz = 0.001
             r.x = -Math.atan2(dy, dz)
             var flip = dz > 0 ? 1 : -1
@@ -378,6 +385,8 @@ var MX = MX || (function (undefined) {
     // ========================================================================
 
     MX.Object3D = Object3D
+    MX.toRad = toRad
+    MX.toDeg = toDeg
 
     // center positioning getter setter
     Object.defineProperty(MX, 'positionAtCenter', {

@@ -54,16 +54,6 @@
 
                 var container = new MX.Object3D('#container').addTo('#wrapper')
 
-                var coords = []
-                for (var i = 0; i < 10; i++) {
-                    var c = new MX.Coords()
-                    c.x = Math.random() * 1000 - 500
-                    c.y = Math.random() * 600 - 300
-                    c.z = Math.random() * 600 - 300
-                    container.add(c)
-                    coords.push(c)
-                }
-
                 // add a target maker
                 var target = new MX.Object3D(),
                     face1 = new MX.Object3D('.target'),
@@ -74,6 +64,23 @@
                 target.y = Math.round(Math.random() * 500 - 250)
                 target.z = Math.round(Math.random() * 500 - 250)
                 container.add(target)
+
+                var coords = []
+                for (var i = 0; i < 10; i++) {
+                    var c = new MX.Coords()
+                    c.x = Math.random() * 1000 - 500
+                    c.y = Math.random() * 600 - 300
+                    c.z = Math.random() * 600 - 300
+
+                    // this basically calls lookAt(target) in every update()
+                    c.follow(target)
+
+                    // this optionally inverse the lookAt() direction
+                    c.inverseLookAt = true
+
+                    container.add(c)
+                    coords.push(c)
+                }
 
                 container.rotationX = -15
                 container.update()
@@ -91,9 +98,6 @@
                 animate()
                 function animate () {
                     requestAnimationFrame(animate)
-                    coords.forEach(function (c) {
-                        c.lookAt(target)
-                    })
                     container.update()
                     if (state.autoRotate) container.rotationY += .3
                 }

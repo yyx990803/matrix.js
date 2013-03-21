@@ -1,6 +1,7 @@
 MX.trackballControl = (function () {
 
-    var obj
+    var obj,
+        locked = false
 
     var target = {
         rotationX: 0,
@@ -82,20 +83,29 @@ MX.trackballControl = (function () {
     }
 
     function update () {
-        if (obj) {
-            var dx = target.rotationX - obj.rotationX,
-                dy = target.rotationY - obj.rotationY
-            if (Math.abs(dx) < 0.01) {
-                obj.rotationX = target.rotationX
-            } else {
-                obj.rotationX += dx / 8
-            }
-            if (Math.abs(dy) < 0.01) {
-                obj.rotationY = target.rotationY
-            } else {
-                obj.rotationY += dy / 8
-            }
+        if (!obj || locked) return
+        var dx = target.rotationX - obj.rotationX,
+            dy = target.rotationY - obj.rotationY
+        if (Math.abs(dx) < 0.01) {
+            obj.rotationX = target.rotationX
+        } else {
+            obj.rotationX += dx / 8
         }
+        if (Math.abs(dy) < 0.01) {
+            obj.rotationY = target.rotationY
+        } else {
+            obj.rotationY += dy / 8
+        }
+    }
+
+    function lock () {
+        locked = true
+    }
+
+    function unlock () {
+        target.rotationX = obj.rotationX
+        target.rotationY = obj.rotationY
+        locked = false
     }
 
     var pub = {
@@ -103,7 +113,9 @@ MX.trackballControl = (function () {
         remove: remove,
         bind: bind,
         update: update,
-        target: target
+        target: target,
+        lock: lock,
+        unlock: unlock
     }
 
     return pub

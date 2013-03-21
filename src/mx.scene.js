@@ -49,12 +49,21 @@ MX.Scene = (function () {
                 perspective = val
                 self.el.style[MX.perspectiveProp] = val + 'px'
                 self.inner.z = -val - self.camera.z
+                self.inner.rotationOrigin.z = -val
             }
         })
 
-        this.camera = new MX.Object3D()
-        this.camera.el = null
-        this.inner.rotationOrigin = this.camera
+        var cam = this.camera = new MX.Object3D()
+        cam.el = null
+
+        cam.inverseLookAt = true
+
+        // cam's lookAt is a bit different
+        //cam.
+
+        this.inner.rotationOrigin = { x:0, y:0, z:0 }
+
+        this.perspective = 0
     }
 
     Scene.prototype = {
