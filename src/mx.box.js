@@ -4,8 +4,8 @@ MX.Box = MX.Object3D.extend({
     init: function (size, color, borderColor) {
 
         size = size || 100
-        color = color || 'rgba(255, 255, 255, 1)'
-        borderColor = borderColor || '#000'
+        color = color || 'rgba(0, 255, 122, .1)'
+        borderColor = borderColor || '#0f3'
 
         // an Object3D's associated DOM node is the "el" property
         this.el.classList.add('box')

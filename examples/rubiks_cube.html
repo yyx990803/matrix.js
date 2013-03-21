@@ -68,17 +68,19 @@
             }
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.trackballControl.js"></script>
+        <script src="../src/mx.controls.js"></script>
         <script src="libs/tween.min.js"></script>
         <script>
 
             MX.rotationUnit = 'deg'
+
             var size = 100,
                 origin = {x:0, y:0, z:0},
                 ease = TWEEN.Easing.Exponential.InOut,
                 lock = false,
                 auto = false,
-                cublets = []
+                cublets = [],
+                controls = MX.controls
 
             var faces = {
                 front: {
@@ -343,7 +345,7 @@
                 animate()
                 function animate () {
                     requestAnimationFrame(animate)
-                    MX.trackballControl.update()
+                    controls.update()
                     TWEEN.update()
                     cube.update()
                 }
@@ -351,9 +353,9 @@
 
             function initControls () {
 
-                MX.trackballControl.init(cube, document, true) // inverse axis
-                MX.trackballControl.rotationX = -25
-                MX.trackballControl.rotationY = -25
+                controls.init(cube, { inverse: true }) // inverse axis
+                controls.rotationX = -25
+                controls.rotationY = -25
 
                 document.addEventListener('keyup', function (e) {
                     if (auto) return
@@ -408,8 +410,8 @@
             }
 
             function reset () {
-                MX.trackballControl.rotationX = -25
-                MX.trackballControl.rotationY = -25
+                controls.rotationX = -25
+                controls.rotationY = -25
                 cube.resetCubelets()
             }
 

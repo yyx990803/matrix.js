@@ -1,35 +1,68 @@
-MX.trackballControl = (function () {
+MX.controls = (function () {
 
     var object,
-        locked = false
+        locked      = false
 
-    var down = false,
-        lastX, lastY,
-        active = false,
-        inverse = false
+    var down        = false,
+        active      = false,
+        inverse     = false,
+        lastX,
+        lastY
 
     var pub = {
-        sensitivity: .5,
-        ease: 8,
-        rotationX: 0,
-        rotationY: 0
+
+        sensitivity : .4,
+        ease        : 10,
+        drag        : true,
+        rotationX   : 0,
+        rotationY   : 0,
+        upperBoundX : undefined,
+        lowerBoundX : undefined,
+        upperBoundY : undefined,
+        lowerBoundY : undefined,
+
+        preset: function (name) {
+            var ops = presets[name]
+            if (ops) {
+                if (currentPreset && presets[currentPreset].teardown) {
+                    presets[currentPreset].teardown()
+                }
+                for (var op in ops) {
+                    if (op !== 'setup' && op !== 'teardown') {
+                        pub[op] = ops[op]
+                    }
+                }
+                if (op.setup) ops.setup()
+            }
+        }
     }
 
-    function init (obj, lis, inv) {
+    var currentPreset
+    var presets = {
+        fps: {
+            drag: false,
+            ease: 4,
+            sensitivity: .2,
+            upperBoundX: 90,
+            lowerBoundX: -90
+        }
+    }
+
+    function init (obj, ops) {
         if (active) return
 
         object = obj
         pub.rotationX = object.rotationX
         pub.rotationY = object.rotationY
 
-        if (inv === true) {
+        ops = ops || {}
+        if (ops.inverse) {
             inverse = true
         }
-
-        if (lis instanceof HTMLElement) {
-            listener = lis
-        } else if (lis instanceof MX.Object3D) {
-            listener = lis.el
+        if (ops.listener instanceof HTMLElement) {
+            listener = ops.listener
+        } else if (ops.listener instanceof MX.Object3D) {
+            listener = ops.listener.el
         } else {
             listener = document
         }
@@ -67,9 +100,12 @@ MX.trackballControl = (function () {
         if (e.type = 'touchmove') {
             e.preventDefault()
         }
+        if (pub.drag && !down) return
+        if (!pub.drag && down) return
         e = normalizeEvent(e)
         if (!e) return
-        if (!down) return
+        lastX = lastX || e.pageX
+        lastY = lastY || e.pageY
         var dx = e.pageX - lastX,
             dy = e.pageY - lastY
         if (inverse) {
@@ -82,6 +118,10 @@ MX.trackballControl = (function () {
         }
         pub.rotationX += dy * pub.sensitivity,
         pub.rotationY -= dx * pub.sensitivity
+        if (pub.upperBoundX) pub.rotationX = Math.min(pub.rotationX, pub.upperBoundX)
+        if (pub.lowerBoundX) pub.rotationX = Math.max(pub.rotationX, pub.lowerBoundX)
+        if (pub.upperBoundY) pub.rotationY = Math.min(pub.rotationY, pub.upperBoundY)
+        if (pub.lowerBoundY) pub.rotationY = Math.max(pub.rotationY, pub.lowerBoundY)
         lastX = e.pageX
         lastY = e.pageY
     }

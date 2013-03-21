@@ -30,12 +30,14 @@
         <script src="../src/mx.scene.js"></script>
         <script src="../src/mx.box.js"></script>
         <script src="../src/mx.coords.js"></script>
-        <script src="../src/mx.trackballControl.js"></script>
+        <script src="../src/mx.controls.js"></script>
         <script src="libs/tween.min.js"></script>
         <script>
             function init () {
 
                 MX.rotationUnit = 'deg'
+
+                // set up scene & camera
 
                 var scene = new MX.Scene().addTo('body')
                 scene.width = 1200
@@ -45,37 +47,71 @@
                 var cam = scene.camera
                 cam.z = -1000
 
-                var box = new MX.Box(300, 'rgba(0, 255, 122, .1)', '#0f3')
-                scene.add(box)
+                // set up objects
+
+                var mainbox = new MX.Box(300)
+                mainbox.y = 150
+                scene.add(mainbox)
 
                 var coords = new MX.Coords(1000)
                 scene.add(coords)
 
-                var control = MX.trackballControl
-                control.init(cam)
+                var box, size
+                for (var i = 0; i < 30; i++) {
+                    size = Math.random() * 100 + 100
+                    box = new MX.Box(size)
+                    box.x = Math.random() * 5000 - 2500
+                    box.y = size / 2 + Math.random() * 1000
+                    box.z = Math.random() * 5000 - 2500
+                    scene.add(box)
+                }
+
+                // set up control
+
+                var controls = MX.controls
+                controls.preset('fps')
+                controls.init(cam, scene)
+
+                // animate
 
                 animate()
                 function animate () {
                     requestAnimationFrame(animate)
-                    control.update()
+                    controls.update()
                     TWEEN.update()
                     scene.update()
                 }
 
-                control.lock()
+                var inAnimation = true
+                controls.lock()
                 new TWEEN.Tween(cam)
                     .to({
-                        x: 1000,
-                        y: 1000,
-                        z: -1000,
-                        rotationX: MX.toDeg(Math.atan2(1000, Math.sqrt(2000000))),
-                        rotationY: 45
+                        x: 2000,
+                        y: 150,
+                        z: 0
                     }, 3000)
                     .easing(TWEEN.Easing.Exponential.InOut)
-                    .start()
-                    .onComplete(function () {
-                        control.unlock()
+                    .onUpdate(function () {
+                        cam.lookAt(mainbox)
                     })
+                    .onComplete(function () {
+                        controls.unlock()
+                        inAnimation = false
+                    })
+                    .start()
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.keyCode === 32) {
+                        controls.lock()
+                    }
+                })
+
+                document.addEventListener('keyup', function (e) {
+                    if (e.keyCode === 32 && !inAnimation) {
+                        controls.unlock()
+                    }
+                })
+
             }
         </script>
     </head>

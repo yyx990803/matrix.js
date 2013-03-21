@@ -8,11 +8,19 @@ MX.Scene = (function () {
         this.el = document.createElement('div')
         this.el.classList.add('mx-scene')
 
-        this.el.style.overflow = 'hidden'
-        this.el.style[MX.transformProp] = 'preserve-3d'
-        this.el.style.WebkitPerspectiveOrigin = '50% 50%'
-        this.el.style.MozPerspectiveOrigin = '50% 50%'
-        this.el.style.perspectiveOrigin = '50% 50%'
+        var s = this.el.style
+
+        s[MX.transformProp] = 'preserve-3d'
+
+        s.webkitPerspectiveOrigin = '50% 50%'
+        s.mozPerspectiveOrigin = '50% 50%'
+        s.perspectiveOrigin = '50% 50%'
+
+        s.webkitUserSelect = 'none'
+        s.mozUserSelect = 'none'
+        s.userSelect = 'none'
+
+        s.overflow = 'hidden'
 
         this.inner = new MX.Object3D().addTo(this.el)
         this.inner.el.style.width = '0'
@@ -56,10 +64,9 @@ MX.Scene = (function () {
         var cam = this.camera = new MX.Object3D()
         cam.el = null
 
-        cam.inverseLookAt = true
-
         // cam's lookAt is a bit different
-        //cam.
+        // ignoring rotationZ
+        cam.getLookAtEuler = getCameraEuler.bind(cam)
 
         this.inner.rotationOrigin = { x:0, y:0, z:0 }
 
@@ -106,12 +113,27 @@ MX.Scene = (function () {
 
             i.rotationX = -c.rotationX
             i.rotationY = -c.rotationY
-            i.rotationZ = -c.rotationZ
+            //i.rotationZ = -c.rotationZ
 
             i.update()
             return this
         }
 
+    }
+
+    function getCameraEuler (target) {
+        var dx = target.x - this.x,
+            dy = target.y - this.y,
+            dz = target.z - this.z
+            r = {}
+        r.y = Math.atan2(-dx, dz)
+        r.x = Math.atan2(-dy, Math.sqrt(dx*dx + dz*dz))
+        r.z = 0
+        if (MX.rotationUnit === 'deg') {
+            r.x = MX.toDeg(r.x)
+            r.y = MX.toDeg(r.y)
+        }
+        return r
     }
 
     return Scene
