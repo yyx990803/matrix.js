@@ -16,8 +16,11 @@
                 font-size: 14px;
                 margin-left: 14px;
                 position: absolute;
+                color: #fff;
+                z-index: 2;
             }
             .mx-scene {
+                z-index: 1;
                 background-color: #000;
                 position: absolute;
                 top: 50%;
@@ -41,8 +44,8 @@
                 // set up scene & camera
 
                 var scene = new MX.Scene().addTo('body')
-                scene.width = 1200
-                scene.height = 600
+                scene.width = window.innerWidth
+                scene.height = window.innerHeight
                 scene.perspective = 1000
 
                 var cam = scene.camera
@@ -71,7 +74,6 @@
 
                 var controls = MX.rotationControl
                 controls.usePreset('firstPerson')
-                controls.init(cam, scene)
 
                 // animate
 
@@ -84,7 +86,6 @@
                 }
 
                 var inAnimation = true
-                controls.lock()
                 new TWEEN.Tween(cam)
                     .to({
                         x: 2000,
@@ -96,10 +97,14 @@
                         cam.lookAt(mainbox)
                     })
                     .onComplete(function () {
-                        controls.unlock()
+                        controls.init(cam, scene)
                         inAnimation = false
                     })
                     .start()
+
+                document.addEventListener('click', function (e) {
+                    controls.initPointerLock()
+                })
 
                 document.addEventListener('keydown', function (e) {
                     if (e.keyCode === 32) {

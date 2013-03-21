@@ -51,7 +51,7 @@ var MX = MX || (function (undefined) {
         MX.prefix =
             'webkitTransform' in s ? 'webkit' :
             'mozTransform' in s ? 'moz' :
-            'msTransform' in s ? 'ms' : null
+            'msTransform' in s ? 'ms' : ''
 
         var t = MX.prefix ? MX.prefix + 'T' : 't'
         transformProp       = MX.transformProp       = t + 'ransform'

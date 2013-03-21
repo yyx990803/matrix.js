@@ -8,6 +8,13 @@ MX.rotationControl = (function () {
         lastX,
         lastY
 
+    var pointerLockPrefix =
+            'pointerLockElement' in document ? '' :
+            'mozPointerLockElement' in document ? 'moz' :
+            'webkitPointerLockElement' in document ? 'webkit' : null,
+        hasPointerLock = !(pointerLockPrefix === null)
+        pointerLockEnabled = false
+
     var pub = {
 
         sensitivity : .4,
@@ -21,6 +28,7 @@ MX.rotationControl = (function () {
         lowerBoundX : undefined,
         upperBoundY : undefined,
         lowerBoundY : undefined,
+        pointerLock : false,
 
         usePreset: function (name) {
             var ops = presets[name]
@@ -84,6 +92,11 @@ MX.rotationControl = (function () {
         listener.removeEventListener('touchstart', onDown)
         listener.removeEventListener('touchmove', onMove)
         listener.removeEventListener('touchend', onUp)
+
+        if (hasPointerLock) {
+            document.removeEventListener(pointerLockPrefix + 'pointerlockchange', onPointerLockChange)
+            document.removeEventListener('mousemove', onPointerLockMove)
+        }
         active = false
     }
 
@@ -102,11 +115,55 @@ MX.rotationControl = (function () {
         if (pub.drag && !down) return
         e = normalizeEvent(e)
         if (!e) return
-            console.log(2)
         lastX = lastX || e.pageX
         lastY = lastY || e.pageY
         var dx = e.pageX - lastX,
             dy = e.pageY - lastY
+        lastX = e.pageX
+        lastY = e.pageY
+        updateTarget(dx, dy)
+    }
+
+    function onUp () {
+        down = false
+    }
+
+    function initPointerLock () {
+
+        if (pointerLockEnabled) return
+
+        document.addEventListener(pointerLockPrefix + 'pointerlockchange', onPointerLockChange)
+        document.addEventListener('mousemove', onPointerLockMove)
+
+        var el = document.body
+        el[pointerLockPrefix + (pointerLockPrefix ? 'R' : 'r') + 'equestPointerLock']()
+    }
+
+    function onPointerLockChange () {
+        var el = document.body
+        if (document[pointerLockPrefix + (pointerLockPrefix ? 'P' : 'p') + 'ointerLockElement'] === el) {
+            pointerLockEnabled = true
+        } else {
+            pointerLockEnabled = false
+        }
+    }
+
+    function onPointerLockMove (e) {
+        if (!pointerLockEnabled) return
+        var dx = e[pointerLockPrefix + (pointerLockPrefix ? 'M' : 'm') + 'ovementX'],
+            dy = e[pointerLockPrefix + (pointerLockPrefix ? 'M' : 'm') + 'ovementY']
+        updateTarget(dx, dy)
+    }
+
+    function normalizeEvent (e) {
+        if (e.touches) {
+            return e.touches.length > 1 ? false : e.touches[0]
+        } else {
+            return e
+        }
+    }
+
+    function updateTarget (dx, dy) {
         if (pub.inverseX) dx = -dx
         if (pub.inverseY) dy = -dy
         if (MX.rotationUnit !== 'deg') {
@@ -119,20 +176,6 @@ MX.rotationControl = (function () {
         if (pub.lowerBoundX) pub.rotationX = Math.max(pub.rotationX, pub.lowerBoundX)
         if (pub.upperBoundY) pub.rotationY = Math.min(pub.rotationY, pub.upperBoundY)
         if (pub.lowerBoundY) pub.rotationY = Math.max(pub.rotationY, pub.lowerBoundY)
-        lastX = e.pageX
-        lastY = e.pageY
-    }
-
-    function onUp () {
-        down = false
-    }
-
-    function normalizeEvent (e) {
-        if (e.touches) {
-            return e.touches.length > 1 ? false : e.touches[0]
-        } else {
-            return e
-        }
     }
 
     function update () {
@@ -161,11 +204,12 @@ MX.rotationControl = (function () {
         locked = false
     }
 
-    pub.init    = init
-    pub.remove  = remove
-    pub.update  = update
-    pub.lock    = lock
-    pub.unlock  = unlock
+    pub.init            = init
+    pub.remove          = remove
+    pub.update          = update
+    pub.lock            = lock
+    pub.unlock          = unlock
+    pub.initPointerLock = initPointerLock
 
     return pub
 
