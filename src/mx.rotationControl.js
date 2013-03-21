@@ -100,9 +100,9 @@ MX.rotationControl = (function () {
             e.preventDefault()
         }
         if (pub.drag && !down) return
-        if (!pub.drag && down) return
         e = normalizeEvent(e)
         if (!e) return
+            console.log(2)
         lastX = lastX || e.pageX
         lastY = lastY || e.pageY
         var dx = e.pageX - lastX,
