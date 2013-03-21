@@ -44,6 +44,7 @@
                     mainbox,
                     coords,
                     box, size,
+                    floor,
                     controls = MX.rotationControl,
                     movements,
                     viewHeight = 300
@@ -106,7 +107,7 @@
                         moveLeft,
                         moveBackward,
                         moveRight,
-                        canJump = true
+                        jumping = false
 
                     var v = 15,
                         jumpV = 25,
@@ -139,8 +140,8 @@
                                         break
 
                                     case 32: // space
-                                        if (canJump) vy += jumpV
-                                        canJump = false
+                                        if (!jumping) vy += jumpV
+                                        jumping = true
                                         break
                                 }
                             })
@@ -175,9 +176,11 @@
 
                             var ry = cam.rotationY
 
-                            if (moveForward || moveBackward || moveRight || moveLeft) {
+                            if (jumping) {
+                                // do nothing
+                            } else if (moveForward || moveBackward || moveRight || moveLeft) {
 
-                                vx = vz = 0                               
+                                vx = vz = 0                              
 
                                 if (moveForward) {
                                     vx += v * Math.cos(ry + Math.PI / 2)
@@ -202,11 +205,7 @@
 
                             } else {
 
-                                vx *= .8
-                                vz *= .8
-
-                                if (vx < 0.01) vx = 0
-                                if (vz < 0.01) vz = 0
+                                vx = vz = 0
 
                             }
 
@@ -217,10 +216,10 @@
                             cam.z += vz
                             cam.y += vy
 
-                            if (cam.y < viewHeight) {
+                            if (cam.y <= viewHeight) {
                                 cam.y = viewHeight
                                 vy = 0
-                                canJump = true
+                                jumping = false
                             }
 
                         }
