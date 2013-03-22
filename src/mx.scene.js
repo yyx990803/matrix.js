@@ -121,6 +121,10 @@ MX.Scene = (function () {
 
     }
 
+    // NOTE
+    // The camera can only do pitch (rotationX) and yaw (rotationY), but no roll (rotationZ)
+    // because I haven't implemented alternative euler orders.
+
     function getCameraEuler (target) {
         var dx = target.x - this.x,
             dy = target.y - this.y,
