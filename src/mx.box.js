@@ -32,6 +32,7 @@ MX.Box = MX.Object3D.extend({
         front.z = -size / 2
 
         var back = this.back = new MX.Object3D('.face')
+        back.rotationY = angle * 2
         back.z = size / 2
 
         // adding children, must also be instances of Object3D

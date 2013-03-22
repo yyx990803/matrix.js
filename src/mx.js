@@ -132,11 +132,14 @@ var MX = MX || (function (undefined) {
 
         this.reset()
 
-        var width, height
+        var width, height,
+            self = this
 
         Object.defineProperty(this, 'width', {
             get: function () {
                 return width
+                    || parseInt(self.el.style.width, 10)
+                    || 0
             },
             set: function (val) {
                 width = val
@@ -147,6 +150,8 @@ var MX = MX || (function (undefined) {
         Object.defineProperty(this, 'height', {
             get: function () {
                 return height
+                    || parseInt(self.el.style.height, 10)
+                    || 0
             },
             set: function (val) {
                 height = val
