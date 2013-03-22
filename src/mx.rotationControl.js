@@ -86,6 +86,21 @@ MX.rotationControl = (function () {
         active = true
     }
 
+    function changeObject (obj) {
+        object = obj
+        pub.rotationX = object.rotationX
+        pub.rotationY = object.rotationY
+    }
+
+    function changeListener (lis) {
+        remove()
+        active = false
+        init(object, lis)
+        if (pointerLockEnabled) {
+            initPointerLock()
+        }
+    }
+
     function remove () {
         if (!active) return
         listener.removeEventListener('mousedown', onDown)
@@ -98,6 +113,7 @@ MX.rotationControl = (function () {
         if (hasPointerLock) {
             document.removeEventListener(pointerLockPrefix + 'pointerlockchange', onPointerLockChange)
             document.removeEventListener('mousemove', onPointerLockMove)
+            document.body[pointerLockPrefix + (pointerLockPrefix ? 'E' : 'e') + 'xitPointerLock']()
         }
         active = false
     }
@@ -137,8 +153,7 @@ MX.rotationControl = (function () {
         document.addEventListener(pointerLockPrefix + 'pointerlockchange', onPointerLockChange)
         document.addEventListener('mousemove', onPointerLockMove)
 
-        var el = document.body
-        el[pointerLockPrefix + (pointerLockPrefix ? 'R' : 'r') + 'equestPointerLock']()
+        document.body[pointerLockPrefix + (pointerLockPrefix ? 'R' : 'r') + 'equestPointerLock']()
     }
 
     function onPointerLockChange () {
@@ -174,13 +189,13 @@ MX.rotationControl = (function () {
         }
 
         if (!pub.disableX) {
-            pub.rotationY += dx * pub.sensitivity
+            pub.rotationX -= dy * pub.sensitivity
             if (pub.upperBoundX) pub.rotationX = Math.min(pub.rotationX, pub.upperBoundX)
             if (pub.lowerBoundX) pub.rotationX = Math.max(pub.rotationX, pub.lowerBoundX)
         }
 
         if (!pub.disableY) {
-            pub.rotationX -= dy * pub.sensitivity
+            pub.rotationY += dx * pub.sensitivity
             if (pub.upperBoundY) pub.rotationY = Math.min(pub.rotationY, pub.upperBoundY)
             if (pub.lowerBoundY) pub.rotationY = Math.max(pub.rotationY, pub.lowerBoundY)
         }
@@ -218,6 +233,8 @@ MX.rotationControl = (function () {
     pub.lock            = lock
     pub.unlock          = unlock
     pub.initPointerLock = initPointerLock
+    pub.changeObject    = changeObject
+    pub.changeListener  = changeListener
 
     return pub
 

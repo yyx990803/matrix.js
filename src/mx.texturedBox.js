@@ -4,7 +4,7 @@ MX.TexturedBox = MX.Object3D.extend({
 
         // width, height, depth, texture, region
 
-        if (!ops.width || !ops.height || !ops.depth || !ops.texture) {
+        if (!ops.width || !ops.height || !ops.depth || (!ops.texture && !ops.classname)) {
             console.warn('TextureBox: missing arguments')
             return
         }
@@ -63,15 +63,23 @@ MX.TexturedBox = MX.Object3D.extend({
         back.height = ops.height
         back.rotationY = angle * 2
         back.z = ops.depth / 2
-        top.el.style.backgroundPosition =
+        back.el.style.backgroundPosition =
             (-(offsetX + ops.depth * 2 + ops.width) + 'px ') +
             (-(offsetY + ops.depth) + 'px')
 
         this.add(top, bottom, left, right, front, back)
 
         this.children.forEach(function (c) {
-            c.el.style.backgroundImage = 'url(' + ops.texture + ')'
+            if (ops.texture) {
+                c.el.style.backgroundImage = 'url(' + ops.texture + ')'
+            }
+            if (ops.classname) {
+                c.el.classList.add(ops.classname)
+            }
         })
+
+        this.update()
+        this.updateChildren = false
 
     }
 

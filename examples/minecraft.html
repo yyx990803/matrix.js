@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mincraft Chars in CSS3D</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <style>
+            html, body {
+                height: 100%;
+                overflow: hidden;
+            }
+            body {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                font-size: 13px;
+                -webkit-perspective: 800px;
+                -moz-perspective: 800px;
+                perspective: 800px;
+            }
+        </style>
+        <script src="../src/mx.js"></script>
+        <script src="../src/mx.texturedBox.js"></script>
+        <script src="../src/mx.rotationControl.js"></script>
+        <script>
+
+            MX.rotationUnit = 'deg'
+
+            var Dude = MX.Object3D.extend({
+
+                init: function (skinName, done) {
+
+                    var self = this,
+                        scale = 15
+                    
+                    // pixelate the texture using canvas
+                    var canvas = document.createElement('canvas'),
+                        ctx = canvas.getContext('2d'),
+                        img = new Image()
+
+                    img.src = 'images/skins/' + skinName + '.png'
+                    img.onload = function () {
+                        canvas.width = img.width * scale
+                        canvas.height = img.height * scale
+                        ctx.webkitImageSmoothingEnabled = false
+                        ctx.mozImageSmoothingEnabled = false
+                        ctx.imageSmoothingEnabled = false
+                        ctx.drawImage(img, 0, 0, img.width * scale, img.height * scale)
+                        var texture = canvas.toDataURL()
+                        inject(texture)
+                        build()
+                    }
+
+                    function inject (texture) {
+                        var css = document.getElementById('mx-texture-' + skinName)
+                        if (css) return
+                        css = document.createElement('style')
+                        css.id = 'mx-texture-' + skinName
+                        css.type = 'text/css'
+                        css.innerHTML =
+                            '.mx-texture-' + skinName + ' {background-image: url(' + texture + ')}'
+                        document.head.appendChild(css)
+                    }
+
+                    function build () {
+
+                        var classname = 'mx-texture-' + skinName
+
+                        // create the components
+
+                        var head = self.head = new MX.TexturedBox({
+                            width: 8 * scale,
+                            height: 8 * scale,
+                            depth: 8 * scale,
+                            classname: classname,
+                        })
+
+                        var body = self.body = new MX.TexturedBox({
+                            width: 8 * scale,
+                            height: 12 * scale,
+                            depth: 4 * scale,
+                            classname: classname,
+                            offset: {
+                                x: 16 * scale,
+                                y: 16 * scale
+                            }
+                        })
+
+                        var legConfig = {
+                            width: 4 * scale,
+                            height: 12 * scale,
+                            depth: 4 * scale,
+                            classname: classname,
+                            offset: {
+                                x: 0,
+                                y: 16 * scale
+                            }
+                        }
+                        var leftLeg = self.leftLeg = new MX.TexturedBox(legConfig),
+                            rightLeg = self.rightLeg = new MX.TexturedBox(legConfig)
+
+                        var armConfig = {
+                            width: 4 * scale,
+                            height: 12 * scale,
+                            depth: 4 * scale,
+                            classname: classname,
+                            offset: {
+                                x: 40 * scale,
+                                y: 16 * scale
+                            }
+                        }
+                        var leftArm = self.leftArm = new MX.TexturedBox(armConfig),
+                            rightArm = self.rightArm = new MX.TexturedBox(armConfig)
+
+                        // put them in the right places
+                        head.y = 10 * scale
+
+                        leftArm.x = -6 * scale
+                        leftArm.rotationOrigin = { x:-6 * scale, y:4 * scale, z:0 }
+
+                        rightArm.x = 6 * scale
+                        rightArm.rotationOrigin = { x:6 * scale, y:4 * scale, z:0 }
+
+                        leftLeg.x = -2 * scale
+                        leftLeg.y = -12 * scale
+                        leftLeg.rotationOrigin = { x:-2 * scale, y:-6 * scale, z:0 }
+
+                        rightLeg.x = 2 * scale
+                        rightLeg.y = -12 * scale
+                        rightLeg.rotationOrigin = { x:2 * scale, y:-6 * scale, z:0 }
+
+                        self.add(head, body, leftArm, rightArm, leftLeg, rightLeg)
+                        self.update()
+
+                        done && done()
+                    }
+
+                }
+
+            })
+
+            var dude,
+                leftArmDir = 1,
+                rightArmDir = -1,
+                leftLegDir = -1,
+                rightLegDir = 1,
+                walkSpeed = 2.5
+
+            var control = MX.rotationControl
+            control.upperBoundX = 90
+            control.lowerBoundX = -90
+
+            var changingSkin = false
+
+            function init () {
+                dude = new Dude('steve', function () {
+                    dude.addTo('body')
+                    control.init(dude)
+                    animate()
+                })
+            }
+
+            function animate () {
+                requestAnimationFrame(animate)
+
+                if (changingSkin) return
+
+                MX.rotationControl.update()
+
+                dude.leftArm.rotationX += leftArmDir * walkSpeed
+                if (dude.leftArm.rotationX > 30 || dude.leftArm.rotationX < -30) {
+                    leftArmDir = -leftArmDir
+                }
+
+                dude.rightArm.rotationX += rightArmDir * walkSpeed
+                if (dude.rightArm.rotationX > 30 || dude.rightArm.rotationX < -30) {
+                    rightArmDir = -rightArmDir
+                }
+
+                dude.leftLeg.rotationX += leftLegDir * walkSpeed
+                if (dude.leftLeg.rotationX > 30 || dude.leftLeg.rotationX < -30) {
+                    leftLegDir = -leftLegDir
+                }
+
+                dude.rightLeg.rotationX += rightLegDir * walkSpeed
+                if (dude.rightLeg.rotationX > 30 || dude.rightLeg.rotationX < -30) {
+                    rightLegDir = -rightLegDir
+                }
+
+                dude.update()
+            }
+
+            function changeSkin (skinName) {
+                changingSkin = true
+                dude.destroy()
+                dude = new Dude(skinName, function () {
+                    dude.addTo('body')
+                    control.changeObject(dude)
+                    changingSkin = false
+                })
+            }
+        </script>
+    </head>
+    <body onload="init()">
+        <h1>CSS3 Minecraft Characters</h1>
+        <p>
+            Powered by Matrix.js <br>
+            It uses canvas.toDataURL() to scale up <br>
+            textures, so you need to load this via http.
+        </p>
+    </body>
+</html>

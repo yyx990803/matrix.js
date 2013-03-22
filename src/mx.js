@@ -363,6 +363,12 @@ var MX = MX || (function (undefined) {
             return this
         },
 
+        destroy: function () {
+            if (this.el.parentNode) {
+                this.el.parentNode.removeChild(this.el)
+            }
+        },
+
         setCSSTransformOrigin: function (origin) {
             this.el && (this.el.style[transformOriginProp] = origin)
             return this
