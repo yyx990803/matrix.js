@@ -22,6 +22,8 @@ MX.rotationControl = (function () {
         drag        : true,
         inverseX    : false,
         inverseY    : false,
+        disableX    : false,
+        disableY    : false,
         rotationX   : 0,
         rotationY   : 0,
         upperBoundX : undefined,
@@ -170,12 +172,18 @@ MX.rotationControl = (function () {
             dx = MX.toRad(dx)
             dy = MX.toRad(dy)
         }
-        pub.rotationX -= dy * pub.sensitivity,
-        pub.rotationY += dx * pub.sensitivity
-        if (pub.upperBoundX) pub.rotationX = Math.min(pub.rotationX, pub.upperBoundX)
-        if (pub.lowerBoundX) pub.rotationX = Math.max(pub.rotationX, pub.lowerBoundX)
-        if (pub.upperBoundY) pub.rotationY = Math.min(pub.rotationY, pub.upperBoundY)
-        if (pub.lowerBoundY) pub.rotationY = Math.max(pub.rotationY, pub.lowerBoundY)
+
+        if (!pub.disableX) {
+            pub.rotationY += dx * pub.sensitivity
+            if (pub.upperBoundX) pub.rotationX = Math.min(pub.rotationX, pub.upperBoundX)
+            if (pub.lowerBoundX) pub.rotationX = Math.max(pub.rotationX, pub.lowerBoundX)
+        }
+
+        if (!pub.disableY) {
+            pub.rotationX -= dy * pub.sensitivity
+            if (pub.upperBoundY) pub.rotationY = Math.min(pub.rotationY, pub.upperBoundY)
+            if (pub.lowerBoundY) pub.rotationY = Math.max(pub.rotationY, pub.lowerBoundY)
+        }
     }
 
     function update () {
