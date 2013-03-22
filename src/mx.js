@@ -131,6 +131,28 @@ var MX = MX || (function (undefined) {
         this.inverseLookAt  = false
 
         this.reset()
+
+        var width, height
+
+        Object.defineProperty(this, 'width', {
+            get: function () {
+                return width
+            },
+            set: function (val) {
+                width = val
+                this.el.style.width = width + 'px'
+            }
+        })
+
+        Object.defineProperty(this, 'height', {
+            get: function () {
+                return height
+            },
+            set: function (val) {
+                height = val
+                this.el.style.height = height + 'px'
+            }
+        })
     }
 
     Object3D.prototype = {

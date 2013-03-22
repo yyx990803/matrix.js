@@ -38,8 +38,8 @@ MX.Box = MX.Object3D.extend({
         this.add(top, bottom, left, right, front, back)
 
         this.children.forEach(function (face) {
-            face.el.style.width = (size - 2) + 'px'
-            face.el.style.height = (size - 2) + 'px'
+            face.width = size - 2
+            face.height = size - 2
             face.el.style.backgroundColor = color
             face.el.style.border = '1px solid ' + borderColor
         })

@@ -26,13 +26,13 @@ MX.Coords = (function () {
             faceA.el.style.backgroundColor = 
             faceB.el.style.backgroundColor = colors[axis]
 
-            this.el.style.width =
-            faceA.el.style.width =
-            faceB.el.style.width = size + 'px'
+            this.width =
+            faceA.width =
+            faceB.width = size
 
-            this.el.style.height =
-            faceA.el.style.height =
-            faceB.el.style.height = Math.round(size / 100) + 'px'
+            this.height =
+            faceA.height =
+            faceB.height = Math.round(size / 100)
 
             var angle = MX.rotationUnit === 'deg' ? 90 : (Math.PI / 2)
 
