@@ -58,6 +58,13 @@ MX.rotationControl = (function () {
             inverseY: true,
             upperBoundX: MX.rotationUnit === 'deg' ? 90 : Math.PI / 2,
             lowerBoundX: MX.rotationUnit === 'deg' ? -90 : -Math.PI / 2
+        },
+        skybox: {
+            sensitivity: .18,
+            inverseX: true,
+            inverseY: true,
+            upperBoundX: MX.rotationUnit === 'deg' ? 90 : Math.PI / 2,
+            lowerBoundX: MX.rotationUnit === 'deg' ? -90 : -Math.PI / 2
         }
     }
 

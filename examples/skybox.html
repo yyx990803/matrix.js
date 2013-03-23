@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <style>
+            html, body {
+                margin: 0;
+                height: 100%;
+            }
+            body {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                color: #fff;
+            }
+            h1 {
+                font-size: 22px;
+                margin: 0;
+            }
+            #info {
+                font-size: 13px;
+                margin: 14px;
+                position: absolute;
+                z-index: 2;
+            }
+            .mx-scene {
+                z-index: 1;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -webkit-transform: translate3d(-50%, -50%, 0);
+                -moz-transform: translate3d(-50%, -50%, 0);
+                transform: translate3d(-50%, -50%, 0);
+            }
+        </style>
+        <script src="../src/mx.js"></script>
+        <script src="../src/mx.scene.js"></script>
+        <script src="../src/mx.texturedBox.js"></script>
+        <script src="../src/mx.rotationControl.js"></script>
+        <script>
+            function init () {
+
+                var scene,
+                    cam,
+                    skybox,
+                    controls = MX.rotationControl
+
+                // set up scene & camera
+
+                scene = new MX.Scene().addTo('body')
+                scene.width = window.innerWidth
+                scene.height = window.innerHeight
+                scene.perspective = 800
+                window.onresize = function () {
+                    scene.width = window.innerWidth
+                    scene.height = window.innerHeight
+                }
+
+                // set up skybox
+
+                skybox = new MX.TexturedBox({
+                    width: 804,
+                    height: 804,
+                    depth: 804,
+                    texture: 'images/universe.jpg',
+                    overlap: 1 // overlap 1px to eliminate seams
+                })
+                scene.add(skybox)
+                skybox
+
+                // control
+                controls.sensitivity = .15
+                controls.upperBoundX = Math.PI / 2,
+                controls.lowerBoundX = -Math.PI / 2
+                controls.init(scene.camera)
+
+                // animate
+
+                animate()
+                function animate () {
+                    requestAnimationFrame(animate)
+                    controls.update()
+                    scene.update()
+                }
+
+            }
+        </script>
+    </head>
+    <body onload="init()">
+        <div id="info">
+            <h1>Matrix.js skybox example</h1>
+            <br>
+            Image from fff.cmiscm.com<br>
+            Try it on mobile!
+        </div>
+    </body>
+</html>

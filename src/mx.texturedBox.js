@@ -12,13 +12,14 @@ MX.TexturedBox = MX.Object3D.extend({
         // faces
         var angle = MX.rotationUnit === 'deg' ? 90 : (Math.PI / 2),
             offsetX = ops.offset ? (ops.offset.x || 0) : 0,
-            offsetY = ops.offset ? (ops.offset.y || 0) : 0
+            offsetY = ops.offset ? (ops.offset.y || 0) : 0,
+            overlap = ops.overlap ? ops.overlap : 0
 
         var top = this.top = new MX.Object3D()
         top.width = ops.width
         top.height = ops.depth
         top.rotationX = angle
-        top.y = ops.height / 2
+        top.y = ops.height / 2 - overlap
         top.el.style.backgroundPosition =
             (-(offsetX + ops.depth) + 'px ') +
             (-offsetY + 'px')
@@ -27,7 +28,7 @@ MX.TexturedBox = MX.Object3D.extend({
         bottom.width = ops.width
         bottom.height = ops.depth
         bottom.rotationX = -angle
-        bottom.y = -ops.height / 2
+        bottom.y = -ops.height / 2 + overlap
         bottom.el.style.backgroundPosition =
             (-(offsetX + ops.depth + ops.width) + 'px ') +
             (-offsetY + 'px')
@@ -36,7 +37,7 @@ MX.TexturedBox = MX.Object3D.extend({
         left.width = ops.depth
         left.height = ops.height
         left.rotationY = -angle
-        left.x = -ops.width / 2
+        left.x = -ops.width / 2 + overlap
         left.el.style.backgroundPosition =
             (-offsetX + 'px ') +
             (-(offsetY + ops.depth) + 'px')
@@ -45,7 +46,7 @@ MX.TexturedBox = MX.Object3D.extend({
         right.width = ops.depth
         right.height = ops.height
         right.rotationY = angle
-        right.x = ops.width / 2
+        right.x = ops.width / 2 - overlap
         right.el.style.backgroundPosition =
             (-(offsetX + ops.depth + ops.width) + 'px ') +
             (-(offsetY + ops.depth) + 'px')
@@ -53,7 +54,7 @@ MX.TexturedBox = MX.Object3D.extend({
         var front = this.front = new MX.Object3D()
         front.width = ops.width
         front.height = ops.height
-        front.z = -ops.depth / 2
+        front.z = -ops.depth / 2 + overlap
         front.el.style.backgroundPosition =
             (-(offsetX + ops.depth) + 'px ') +
             (-(offsetY + ops.depth) + 'px')
@@ -62,7 +63,7 @@ MX.TexturedBox = MX.Object3D.extend({
         back.width = ops.width
         back.height = ops.height
         back.rotationY = angle * 2
-        back.z = ops.depth / 2
+        back.z = ops.depth / 2 - overlap
         back.el.style.backgroundPosition =
             (-(offsetX + ops.depth * 2 + ops.width) + 'px ') +
             (-(offsetY + ops.depth) + 'px')
@@ -76,6 +77,7 @@ MX.TexturedBox = MX.Object3D.extend({
             if (ops.classname) {
                 c.el.classList.add(ops.classname)
             }
+            c.el.style.backgroundRepeat = 'no-repeat'
         })
 
         this.update()

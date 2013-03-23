@@ -56,6 +56,11 @@
                 scene.height = window.innerHeight
                 scene.perspective = 1000
 
+                window.onresize = function () {
+                    scene.width = window.innerWidth
+                    scene.height = window.innerHeight
+                }
+
                 cam = scene.camera
                 cam.z = -1000
                 cam.y = 5000
