@@ -146,6 +146,10 @@
                     img.src = 'images/skins/' + skinName + '.png'
                     img.onload = function () {
 
+                        // the reason to use fillRect to draw
+                        // everything: because Safari doesn't
+                        // support pixelated scaling
+
                         ctx.drawImage(img, 0, 0)
 
                         var w = img.width,
