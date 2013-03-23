@@ -2,7 +2,7 @@ MX.TexturedBox = MX.Object3D.extend({
 
     init: function (ops) {
 
-        // width, height, depth, texture, region
+        // width, height, depth, texture || classname
 
         if (!ops.width || !ops.height || !ops.depth || (!ops.texture && !ops.classname)) {
             console.warn('TextureBox: missing arguments')

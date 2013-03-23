@@ -7,3 +7,7 @@ A featherweight CSS 3D engine. Similar to Three.js CSS3D Renderer, but less intr
 ### But there are no matrices in the source code!
 
 Originally I wanted to use matrix3d() for everything, hence the name. Ironically it turned out that using native CSS transform functions is faster than multiplying matrices in JavaScript, so I eneded up not using matrices at all.
+
+### Compatibility
+
+Mostly it has to do with the Browser's capability of handling CSS3D transforms. Works best in Chrome, very good in Safari (both desktop and iOS), and not so good in Firefox (not hardware accelerated and has z-index issues). IE not tested.
