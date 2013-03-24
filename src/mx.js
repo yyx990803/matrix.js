@@ -46,6 +46,8 @@ var MX = MX || (function (undefined) {
 
     function setup () {
 
+        // sniff prefix
+
         var s = document.body.style
 
         MX.prefix =
@@ -60,6 +62,8 @@ var MX = MX || (function (undefined) {
         transformStyleProp  = MX.transformStyleProp  = t + 'ransformStyle'
         perspectiveProp     = MX.perspectiveProp     = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
 
+        // shiv rAF
+
         var vendors = ['webkit', 'moz', 'ms']
         for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
             window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame']
@@ -68,14 +72,15 @@ var MX = MX || (function (undefined) {
               window[vendors[x]+'CancelRequestAnimationFrame']
         }
 
+        // inject centering css
+
         centeringCSS = document.createElement('style')
         centeringCSS.type = 'text/css'
         centeringCSS.innerHTML =
-            '.mx-object3d {\
-                position: absolute;\
-                top: 50%;\
-                left: 50%;\
-            }'
+            '.mx-object3d {'
+            + 'position: absolute;'
+            + 'top: 50%;'
+            + 'left: 50%;}'
         injectCenteringCSS()
     }
 
@@ -100,6 +105,9 @@ var MX = MX || (function (undefined) {
     }
 
     function buildRotationTranslation (obj) {
+
+        // used when rotationOrigin is set
+
         var origin = obj.rotationOrigin
         if (!origin) {
             return
