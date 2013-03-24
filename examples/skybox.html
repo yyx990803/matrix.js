@@ -2,8 +2,7 @@
 <html>
     <head>
         <title></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">        
         <style>
             html, body {
                 margin: 0;
@@ -37,13 +36,15 @@
         <script src="../src/mx.scene.js"></script>
         <script src="../src/mx.texturedBox.js"></script>
         <script src="../src/mx.rotationControl.js"></script>
+        <script src="libs/tween.min.js"></script>
         <script>
             function init () {
 
                 var scene,
                     cam,
                     skybox,
-                    controls = MX.rotationControl
+                    controls,
+                    mobile = false
 
                 // set up scene & camera
 
@@ -66,13 +67,87 @@
                     overlap: 1 // overlap 1px to eliminate seams
                 })
                 scene.add(skybox)
-                skybox
 
-                // control
-                controls.sensitivity = .15
-                controls.upperBoundX = Math.PI / 2,
-                controls.lowerBoundX = -Math.PI / 2
-                controls.init(scene.camera)
+                // controls
+                if ('DeviceOrientationEvent' in window &&
+                    'ontouchstart' in window &&
+                    window.screen.width <= 1024) {
+
+                    mobile = true
+
+                    // use device orientation for mobile
+                    controls = (function () {
+
+                        var locked = false,
+                            lastGamma,
+                            lastAlpha
+
+                        return {
+
+                            rotationX: 0,
+                            rotationY: 0,
+
+                            init: function () {
+
+                                window.addEventListener('resize', checkMode)
+                                window.addEventListener('deviceorientation', function (e) {
+                                    if (!lastGamma) {
+                                        lastAlpha = e.alpha
+                                        lastGamma = e.gamma
+                                        controls.rotationX = MX.toRad(e.gamma > 0 ? 90 - e.gamma : e.gamma - 90)
+                                    }
+                                    var dx = e.gamma - lastGamma,
+                                        dy = e.alpha - lastAlpha
+
+                                    if (dy > 300) {
+                                        dy -= 360
+                                    } else if (dy < -300) {
+                                        dy += 360
+                                    }
+
+                                    if (e.gamma < 0) {
+                                        dx = -dx
+                                        dy = -dy
+                                    }
+
+                                    controls.rotationX += MX.toRad(-dx)
+                                    controls.rotationY += MX.toRad(dy)
+                                    lastGamma = e.gamma
+                                    lastAlpha = e.alpha
+                                })
+                                document.addEventListener('touchmove', function (e) {
+                                    e.preventDefault()
+                                })
+
+                            },
+
+                            update: function () {
+                                if (locked) return
+                                var c = scene.camera
+                                c.rotationX += (this.rotationX - c.rotationX) / 4
+                                c.rotationY += (this.rotationY - c.rotationY) / 4
+                            },
+
+                            lock: function () {
+                                locked = true
+                            },
+
+                            unlock: function () {
+                                locked = false
+                            }
+                        }
+
+                    })()
+                    controls.init()
+                } else {
+                    controls = MX.rotationControl
+                    controls.sensitivity = .15
+                    controls.upperBoundX = Math.PI / 4,
+                    controls.lowerBoundX = -Math.PI / 4
+                    controls.init(scene.camera)
+                }
+
+                controls.lock()
 
                 // animate
 
@@ -80,7 +155,36 @@
                 function animate () {
                     requestAnimationFrame(animate)
                     controls.update()
+                    TWEEN.update()
                     scene.update()
+                }
+
+                new TWEEN.Tween(skybox)
+                    .to({
+                        rotationY: Math.PI * 2
+                    }, 3000)
+                    .easing(TWEEN.Easing.Exponential.InOut)
+                    .onComplete(function () {
+                        controls.unlock()
+                        if (mobile) checkMode()
+                    })
+                    .start()
+
+                function log () {
+                    var str = ''
+                    for (var i = 0; i < arguments.length; i++) {
+                        str += arguments[i] + ', '
+                    }
+                    document.getElementById('log').textContent = str
+                }
+
+                function checkMode () {
+                    if (window.innerWidth < window.innerHeight) {
+                        alert('please use landscape mode')
+                        controls.lock()
+                    } else {
+                        controls.unlock()
+                    }
                 }
 
             }
@@ -92,6 +196,7 @@
             <br>
             Image from fff.cmiscm.com<br>
             Try it on mobile!
+            <p id="log" style="font-size: 80px"></p>
         </div>
     </body>
 </html>
