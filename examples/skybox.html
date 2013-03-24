@@ -79,7 +79,6 @@
                     controls = (function () {
 
                         var locked = false,
-                            lastGamma,
                             lastAlpha
 
                         return {
@@ -89,31 +88,26 @@
 
                             init: function () {
 
-                                window.addEventListener('resize', checkMode)
+                                window.addEventListener('orientationchange', checkMode)
                                 window.addEventListener('deviceorientation', function (e) {
-                                    if (!lastGamma) {
+                                    if (!lastAlpha) {
                                         lastAlpha = e.alpha
-                                        lastGamma = e.gamma
-                                        controls.rotationX = MX.toRad(e.gamma > 0 ? 90 - e.gamma : e.gamma - 90)
                                     }
-                                    var dx = e.gamma - lastGamma,
-                                        dy = e.alpha - lastAlpha
+                                    var dy = e.alpha - lastAlpha
 
+                                    // avoid the sudden jump from 0 to -360
                                     if (dy > 300) {
                                         dy -= 360
                                     } else if (dy < -300) {
                                         dy += 360
                                     }
 
-                                    if (e.gamma < 0) {
-                                        dx = -dx
-                                        dy = -dy
-                                    }
-
-                                    controls.rotationX += MX.toRad(-dx)
+                                    //controls.rotationX += MX.toRad(-dx)
+                                    controls.rotationX = MX.toRad(e.gamma > 0 ? 90 - e.gamma : 90 + e.gamma)
                                     controls.rotationY += MX.toRad(dy)
-                                    lastGamma = e.gamma
                                     lastAlpha = e.alpha
+
+                                    log(e.gamma.toFixed(0), e.beta.toFixed(0), e.alpha.toFixed(0))
                                 })
                                 document.addEventListener('touchmove', function (e) {
                                     e.preventDefault()
@@ -142,6 +136,7 @@
                 } else {
                     controls = MX.rotationControl
                     controls.sensitivity = .15
+                    controls.ease = 12
                     controls.upperBoundX = Math.PI / 4,
                     controls.lowerBoundX = -Math.PI / 4
                     controls.init(scene.camera)
@@ -171,9 +166,10 @@
                     .start()
 
                 function log () {
-                    var str = ''
-                    for (var i = 0; i < arguments.length; i++) {
-                        str += arguments[i] + ', '
+                    var str = '',
+                        l = arguments.length
+                    for (var i = 0; i < l; i++) {
+                        str += arguments[i] + ((i === l - 1) ? '' : ', ')
                     }
                     document.getElementById('log').textContent = str
                 }
