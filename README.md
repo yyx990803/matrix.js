@@ -177,4 +177,4 @@ var box = new Box()
 
 - **setCSSTransformOrigin(string), setCSSTransformStyle(string), setCSSTransition(string), setCSSPerspective(string)**
 
-    Set the object's `el`'s CSS transform properties. These methods take of using the correct prefixes.
+    Set the object's `el`'s CSS transform properties. These methods take care of using the correct prefixes so you can just use un-prefixed values.
