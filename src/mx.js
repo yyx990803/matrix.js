@@ -185,7 +185,6 @@ var MX = MX || (function (undefined) {
             this.scale = this.__scale           = 1
             this.rotationOrigin                 = undefined
             this.followTarget                   = undefined
-            this.transformString                = ''
             this.dirty                          = true
             this.update()
         },
@@ -272,7 +271,7 @@ var MX = MX || (function (undefined) {
                         + 'rotateY(' + this.rotationY.toFixed(floatPrecision) + MX.rotationUnit + ') '
                         + 'rotateZ(' + this.rotationZ.toFixed(floatPrecision) + MX.rotationUnit + ') '
 
-                this.transformString =
+                var transformString =
                     (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '')
                     + 'translate3d('
                         + this.x.toFixed(floatPrecision) + 'px,'
@@ -284,15 +283,15 @@ var MX = MX || (function (undefined) {
                         + this.scaleZ.toFixed(floatPrecision) + ') '
 
                 if (rotationTranslation) {
-                    this.transformString += rotationTranslation.before
+                    transformString += rotationTranslation.before
                         + rotation
                         + rotationTranslation.after
 
                 } else {
-                    this.transformString += rotation
+                    transformString += rotation
                 }
                     
-                this.el.style[transformProp] = this.transformString
+                this.el.style[transformProp] = transformString
                 this.dirty = false
             }
 
@@ -331,11 +330,6 @@ var MX = MX || (function (undefined) {
                 r.z = toDeg(r.z)
             }
             return r
-        },
-
-        follow: function (target) {
-            this.followTarget = target
-            return this
         },
 
         add: function () {
