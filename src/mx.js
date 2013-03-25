@@ -54,13 +54,12 @@ var MX = MX || (function (undefined) {
             'webkitTransform' in s ? 'webkit' :
             'mozTransform' in s ? 'moz' :
             'msTransform' in s ? 'ms' : ''
-
-        var t = MX.prefix ? MX.prefix + 'T' : 't'
-        transformProp       = MX.transformProp       = t + 'ransform'
-        transitionProp      = MX.transitionProp      = t + 'ransition'
-        transformOriginProp = MX.transformOriginProp = t + 'ransformOrigin'
-        transformStyleProp  = MX.transformStyleProp  = t + 'ransformStyle'
-        perspectiveProp     = MX.perspectiveProp     = (MX.prefix ? MX.prefix + 'P' : 'p') + 'erspective'
+            
+        transformProp       = MX.transformProp       = addPrefix('transform')
+        transitionProp      = MX.transitionProp      = addPrefix('transition')
+        transformOriginProp = MX.transformOriginProp = addPrefix('transformOrigin')
+        transformStyleProp  = MX.transformStyleProp  = addPrefix('transformStyle')
+        perspectiveProp     = MX.perspectiveProp     = addPrefix('perspective')
 
         // shiv rAF
 
@@ -120,6 +119,13 @@ var MX = MX || (function (undefined) {
                 after: 'translate3d(' + (-dx) + 'px,' + (-dy) + 'px,' + (-dz) + 'px) '
             }
         }
+    }
+
+    function addPrefix (string) {
+        if (MX.prefix) {
+            string = MX.prefix + string.charAt(0).toUpperCase() + string.slice(1)
+        }
+        return string
     }
 
     // ========================================================================
@@ -336,6 +342,7 @@ var MX = MX || (function (undefined) {
             if (!this.el) return
             var parent = this
             Array.prototype.forEach.call(arguments, function (child) {
+                if (!child instanceof Object3D) return
                 parent.el.appendChild(child.el)
                 if (!parent.children) parent.children = []
                 parent.children.push(child)
@@ -344,12 +351,15 @@ var MX = MX || (function (undefined) {
             return this
         },
 
-        remove: function (child) {
-            var index = this.children.indexOf(child)
-            if (index !== -1) {
-                this.children.splice(index, 1)
-                child.parent = undefined
-            }
+        remove: function () {
+            var parent = this
+            Array.prototype.forEach.call(arguments, function (child) {
+                var index = parent.children.indexOf(child)
+                if (index !== -1) {
+                    parent.children.splice(index, 1)
+                    child.parent = undefined
+                }
+            })
             return this
         },
 
@@ -365,7 +375,7 @@ var MX = MX || (function (undefined) {
             return this
         },
 
-        destroy: function () {
+        removeElement: function () {
             if (this.el.parentNode) {
                 this.el.parentNode.removeChild(this.el)
             }

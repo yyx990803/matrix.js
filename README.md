@@ -23,19 +23,23 @@ The global object. Contains all the components and some global configurations.
 **Properties**
 
 - **MX.rotationUnit**  _{ String }_
-    **Default**: `'rad'`, other available value: `'deg'`.
+
+    **Default**: `'rad'`, other available value: `'deg'`.  
     Unit used for rotation values.
 
 - **MX.positionAtCenter** _{ Boolean }_
-    **Default**: `true`
+
+    **Default**: `true`  
     Whether or not to auto-center `.mx-object3d` elements. See `examples/no_centering.html` for more details.
 
 **Methods**
 
 - **MX.toRad()**
+
     converts degrees to radians.
 
 - **MX.toDeg()**
+
     converts radians to degrees.
 
 ---
@@ -56,54 +60,108 @@ var obj = new MX.Object3D('div#main-box.box')
 var obj2 = new MX.Object3D()
 ```
 
-**Properties**
+It also comes with an inheritence util method `extend()`:
+
+```js
+// Creating a resuable box class
+var Box = MX.Object3D.extend({
+    // init will be called in the constructor function
+    init: function () { ... },
+    // all other properties will be mixed into the prototype
+    spin: function () { ... }
+})
+var box = new Box()
+```
+
+**Instance Properties**
 
 - **el** _{ HTMLElement }_
+
     The DOM element
 
 - **x, y, z** _{ Number }_
-    **Default**: `0`
-    The position of the element in the 3D space, relative to:
+
+    **Default**: `0`  
+    The position of the element in the 3D space, relative to (**Note the Y axis points upwards in MX's system**):
     - Its parent object's center if `MX.positionAtCenter` is `true`
     - Its default position on page if `MX.positionAtCenter` is `false`
-    **Note the Y axis points upwards in MX's system!**
 
 - **rotationX, rotationY, rotationZ** _{ Number }_
-    **Default**: `0`
+
+    **Default**: `0`  
     The rotation on each axis. The euler order is XYZ.
 
 - **scaleX, scaleY, scaleZ** _{ Number }_
-    **Default**: `1`
+
+    **Default**: `1`  
     The scale on each axis.
 
 - **scale** _{ Number }_
-    **Default**: `1`
+
+    **Default**: `1`  
     The scale for all three axes. If this is not 1 it will override any scaling on individual axis.
 
 - **width, height** _{ Number }_
-    **Default**: `0`
+
+    **Default**: `0`  
     `el`'s CSS width & height. Setting this will change `el`'s CSS width & height properties.
 
 - **parent** _{ MX.Object3D }_
-    **Default**: `undefined`
+
+    **Default**: `undefined`  
     The parent object containing this object.
 
 - **children** _{ [ MX.Object3D ] }_
-    **Default**: `[]`
+
+    **Default**: `[]`  
     An array containing all children objects.
 
 - **updateChildren** _{ Boolean }_
-    **Default**: `true`
+
+    **Default**: `true`  
     Whether to call children's `update()` as well during its own `update()`.
 
 - **rotationOrigin** _{ Object }_
-    **Default**: `undefined`
+
+    **Default**: `undefined`  
     If set, all rotations will happen relative to this point. Can be any object that has `x`, `y` and `z` properties.
 
 - **followTarget** _{ Object }_
-    **Default**: `undefined`
+
+    **Default**: `undefined`  
     If set, will aotumatically call `lookAt(this.followTarget)` on every `update()`. Can be any object that has `x`, `y` and `z` properties.
 
 - **inverseLookAt** _{ Boolean }_
-    **Default**: `false`
+
+    **Default**: `false`  
     Inverse look at facing for `lookAt()`, `follow()` and `getLookAtEuler()` methods.
+
+**Instance Methods**
+
+- **update()**
+
+    Check if the object's transform properties have changed, if yes, apply the CSS transform to `el`. If `updateChildren` is `true`, will also call `update()` on all children objects.
+
+- **add(child1, child2, ...)**
+
+    Add child objects. Takes any number of arguments, which must be instances of `MX.Object3D`.
+
+- **remove(child1, child2, ...)**
+
+    Remove child objects. Takes any number of arguments, which must be instances of `MX.Object3D`.
+
+- **addTo(target)**
+
+    Add the object itself to a target. The target can be an instance of `MX.Object3D`, a native DOM element, or a querySelector string.
+
+- **reset()**
+
+    Resets object's position, rotation, scaling, rotationOrigin and followTarget to default values.
+
+- **removeElement()**
+
+    Removes the object's DOM element from the page.
+
+- **setCSSTransformOrigin(string), setCSSTransformStyle(string), setCSSTransition(string), setCSSPerspective(string)**
+
+    Set the object's `el`'s CSS transform properties. These methods take of using the correct prefixes.

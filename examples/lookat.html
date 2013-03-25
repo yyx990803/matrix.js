@@ -73,7 +73,7 @@
                     c.z = Math.random() * 600 - 300
 
                     // this basically calls lookAt(target) in every update()
-                    c.follow(target)
+                    c.followTarget = target
 
                     // this optionally inverse the lookAt() direction
                     c.inverseLookAt = true
