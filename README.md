@@ -10,4 +10,4 @@ Originally I wanted to use matrix3d() for everything, hence the name. Ironically
 
 ### Compatibility
 
-Mostly it has to do with the Browser's capability of handling CSS3D transforms. Works best in Chrome, very good in Safari (both desktop and iOS), and not so good in Firefox (not hardware accelerated and has z-index issues). IE10 not tested at the moment.
+Mostly it has to do with the Browser's capability of handling CSS3D transforms. Works best in Chrome, very good in Safari (both desktop and iOS), and not so good in Firefox (not hardware accelerated and has some z-index issues). Doesn't work in IE10 because IE10 doesn't support `transform-style: preserve-3d` yet.

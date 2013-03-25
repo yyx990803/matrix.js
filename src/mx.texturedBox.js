@@ -1,8 +1,29 @@
+// Creates a box using a given texture image.
+// Uses a texture image like this:
+//
+//             ---------- ----------
+//            |          |          |
+//            |   top    |  bottom  |
+//            |          |          |
+//  ---------- ---------- ---------- ----------
+// |          |          |          |          |
+// |   left   |  front   |  right   |   back   |
+// |          |          |          |          |
+//  ---------- ---------- ---------- ----------
+//
+// See `examples/images/skins/` for some minecraft skin examples.
+
+// Options:
+//
+//   - {number} `width`
+//   - {number} `height`
+//   - {number} `depth`
+//   - {string} `texture` path to texture image
+//   - {string} `classname` class to be added to dom element
+
 MX.TexturedBox = MX.Object3D.extend({
 
     init: function (ops) {
-
-        // width, height, depth, texture || classname
 
         if (!ops.width || !ops.height || !ops.depth || (!ops.texture && !ops.classname)) {
             console.warn('TextureBox: missing arguments')
