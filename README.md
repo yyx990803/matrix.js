@@ -16,6 +16,11 @@ Mostly it has to do with the Browser's capability of handling CSS3D transforms. 
 
 ### Documentation
 
+[MX](#mx)
+[MX.Object3D](#mxobject3d)
+
+---
+
 ## MX
 
 The global object. Contains all the components and some global configurations.
@@ -153,6 +158,14 @@ var box = new Box()
 - **addTo(target)**
 
     Add the object itself to a target. The target can be an instance of `MX.Object3D`, a native DOM element, or a querySelector string.
+
+- **lookAt(target)**
+
+    Set the object's rotation so that it's facing the given target. Target can be any object with `x`,`y`,`z` properties.
+
+- **getLookAtEuler(target)**
+    
+    Returns an object whose `x`,`y`,`z` properties are the amount of rotations needed on each axis for the object to face the target.
 
 - **reset()**
 
