@@ -28,8 +28,8 @@
             }
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.texturedBox.js"></script>
-        <script src="../src/mx.rotationControl.js"></script>
+        <script src="../src/primitives/mx.texturedBox.js"></script>
+        <script src="../src/extensions/mx.rotationControl.js"></script>
         <script>
 
             // This demo uses canvas.toDataURL() to scale up
@@ -48,7 +48,7 @@
                 rightLegDir     = 1,
                 walkSpeed       = 2.5
 
-            var control         = MX.rotationControl
+            var control         = new MX.RotationControl()
             control.upperBoundX = 90
             control.lowerBoundX = -90
 
@@ -209,7 +209,7 @@
             function animate () {
                 requestAnimationFrame(animate)
 
-                MX.rotationControl.update()
+                control.update()
 
                 dude.leftArm.rotationX += leftArmDir * walkSpeed
                 if (dude.leftArm.rotationX > 30 || dude.leftArm.rotationX < -30) {

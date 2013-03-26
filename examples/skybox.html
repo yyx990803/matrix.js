@@ -33,9 +33,9 @@
             }
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.scene.js"></script>
-        <script src="../src/mx.texturedBox.js"></script>
-        <script src="../src/mx.rotationControl.js"></script>
+        <script src="../src/extensions/mx.scene.js"></script>
+        <script src="../src/extensions/mx.rotationControl.js"></script>
+        <script src="../src/primitives/mx.texturedBox.js"></script>
         <script src="libs/tween.min.js"></script>
         <script>
             function init () {
@@ -134,7 +134,7 @@
                     })()
                     controls.init()
                 } else {
-                    controls = MX.rotationControl
+                    controls = new MX.RotationControl()
                     controls.sensitivity = .15
                     controls.ease = 12
                     controls.upperBoundX = Math.PI / 4,

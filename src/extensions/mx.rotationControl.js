@@ -1,4 +1,4 @@
-MX.rotationControl = (function () {
+MX.RotationControl = function () {
 
     var object,
         locked      = false
@@ -20,17 +20,21 @@ MX.rotationControl = (function () {
         sensitivity : .5,
         ease        : 10,
         drag        : true,
+
         inverseX    : false,
         inverseY    : false,
+
         disableX    : false,
         disableY    : false,
+
         rotationX   : 0,
         rotationY   : 0,
+
         upperBoundX : undefined,
         lowerBoundX : undefined,
+        
         upperBoundY : undefined,
         lowerBoundY : undefined,
-        pointerLock : false,
 
         usePreset: function (name) {
             var ops = presets[name]
@@ -245,4 +249,4 @@ MX.rotationControl = (function () {
 
     return pub
 
-})()
+}

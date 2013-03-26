@@ -119,7 +119,7 @@
 
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.rotationControl.js"></script>
+        <script src="../src/extensions/mx.rotationControl.js"></script>
         <script src="libs/tween.min.js"></script>
         <script src="libs/stats.min.js"></script>
         <script>
@@ -247,7 +247,7 @@
 
             var container,
                 stats,
-                controls = MX.rotationControl,
+                controls = new MX.RotationControl(),
                 targets = {
                     table: [],
                     sphere: [],

@@ -30,10 +30,10 @@
             }
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.scene.js"></script>
-        <script src="../src/mx.box.js"></script>
-        <script src="../src/mx.coords.js"></script>
-        <script src="../src/mx.rotationControl.js"></script>
+        <script src="../src/extensions/mx.scene.js"></script>
+        <script src="../src/extensions/mx.rotationControl.js"></script>
+        <script src="../src/primitives/mx.box.js"></script>
+        <script src="../src/primitives/mx.coords.js"></script>
         <script src="libs/tween.min.js"></script>
         <script>
             function init () {
@@ -44,7 +44,7 @@
                     coords,
                     box, size,
                     floor,
-                    controls = MX.rotationControl,
+                    controls = new MX.RotationControl(),
                     movements,
                     viewHeight = 300
 

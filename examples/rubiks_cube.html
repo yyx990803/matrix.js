@@ -69,7 +69,7 @@
             }
         </style>
         <script src="../src/mx.js"></script>
-        <script src="../src/mx.rotationControl.js"></script>
+        <script src="../src/extensions/mx.rotationControl.js"></script>
         <script src="libs/tween.min.js"></script>
         <script>
 
@@ -81,7 +81,7 @@
                 lock        = false,
                 auto        = false,
                 cublets     = [],
-                controls    = MX.rotationControl
+                controls    = new MX.RotationControl()
 
             var faces = {
                 front: {

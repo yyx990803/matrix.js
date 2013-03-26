@@ -16,8 +16,13 @@ Mostly it has to do with the Browser's capability of handling CSS3D transforms. 
 
 ### Documentation
 
+The core is simply `mx.js` which provides:
+
 [MX](#mx)
+
 [MX.Object3D](#mxobject3d)
+
+There are a few other extensions such as `MX.Scene` and `MX.rotationControl`,
 
 ---
 
