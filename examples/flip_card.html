@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                overflow: hidden;
+            }
+            body {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+            }
+            h1 {
+                text-align: center;
+                padding-top: 10px;
+            }
+            #container {
+                -webkit-transform-style: preserve-3d; /* Required to make the tiny z difference work */
+                -moz-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+                -webkit-transform: translate3d(0, 0, 800px); /* Chrome only bug, require this to make mouse events work */
+                width: 660px;
+                padding: 10px;
+                margin: 0px auto;
+            }
+            .card {
+                cursor: pointer;
+                background-color: #222;
+                display: inline-block;
+                -webkit-transition: all 1s cubic-bezier(.56, 0, .31, 1);
+                -moz-transition: all 1s cubic-bezier(.56, 0, .31, 1);
+                transition: all 1s cubic-bezier(.56, 0, .31, 1);
+                opacity: 0;
+            }
+            .card.flipped {
+                background-color: transparent !important;
+            }
+            .content {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                color: #fff;
+                padding: 30px;
+                font-size: 72px;
+            }
+            .image {
+                -webkit-transform: translate3d(0,0,-0.5px) scaleX(-1); /* tiny z value for backface */
+                -moz-transform: translate3d(0,0,-0.5px) scaleX(-1);
+                transform: translate3d(0,0,-0.5px) scaleX(-1);
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        </style>
+        <script src="../src/mx.js"></script>
+    </head>
+    <body onload="init()">
+        <h1>Matrix.js + Transitions</h1>
+        <div id="container">
+        </div>
+        <script>
+
+        // NOTE
+        // Lot's of hacks in this one, kinda messy.
+        // only works on Webkit.
+
+        function init () {
+
+            MX.rotationUnit = 'deg'
+            MX.positionAtCenter = false
+
+            var perspective = 800,
+                zoom = 4,
+                depth = (zoom - 1) * perspective,
+                width = 800,
+                height = 480,
+                mHorizontal = (width - width / zoom) / 2 - 10,
+                mVertical = (height - height / zoom) / 2 - 10,
+                transitionFast = 'all .4s cubic-bezier(.56, 0, .31, 1)',
+                currentFlipped
+
+            var Card = MX.Object3D.extend({
+
+                init: function () {
+
+                    this.flipped = false
+
+                    this.el.classList.add('card')
+                    this.el.innerHTML = '<div class="content">Hello</div><img class="image" src="images/800x480.gif">'
+
+                    this.width = width
+                    this.height = height
+                    this.el.style.margin = '-' + mVertical + 'px -' + mHorizontal + 'px'
+                    this.el.style.backgroundColor = 'rgb(' + ran() + ', 0,' + ran() + ')'
+
+                    this.el.addEventListener('click', this.flip.bind(this))
+
+                    this.x = Math.random() * 3000 - 1500
+                    this.y = Math.random() * 3000 - 1500
+                    this.z = 0
+                    this.rotationX = Math.random() * 720 - 360
+                    this.rotationY = Math.random() * 720 - 360
+                    this.perspective = perspective
+                    this.z = depth // this makes the element 1/zoom the size
+                    this.update() // force element start in hardware-accelerated mode
+
+                },
+
+                flip: function () {
+                    if (currentFlipped && currentFlipped !== this) {
+                        currentFlipped.close()
+                    }
+                    if (this.flipped) {
+                        this.close()
+                    } else {
+                        this.open()
+                    }
+                },
+
+                open: function () {
+                    this.el.classList.add('flipped')
+                    var pos = this.el.getBoundingClientRect(),
+                        targetPos = {
+                            x: (window.innerWidth - width) / 2 + mHorizontal,
+                            y: (window.innerHeight - height) / 2 + mVertical - 50
+                        }
+                    this.x = targetPos.x - pos.left
+                    this.y = -(targetPos.y - pos.top)
+                    this.z = 0
+                    this.rotationY = 180
+                    this.flipped = true
+                    this.update()
+                    currentFlipped = this
+                },
+
+                close: function () {
+                    if (this.rotationY === 0) return
+                    this.el.classList.remove('flipped')
+                    this.x = 0
+                    this.y = 0
+                    this.z = depth
+                    this.rotationY = 360
+                    this.flipped = false
+                    this.update()
+                    var self = this
+                    this.onTransitionEnd(function () {
+                        self.setCSSTransition('none')
+                        self.rotationY = 0
+                        self.update()
+                        setTimeout(function () {
+                            self.setCSSTransition(transitionFast)
+                        }, 0)
+                    })
+                }
+            })
+    
+            var cards = []
+            for (var i = 0; i < 10; i++) {
+                cards.push(new Card().addTo('#container'))
+            }
+
+            setTimeout(function () {
+                cards.forEach(function (card) {
+                    card.x = 0
+                    card.y = 0
+                    card.z = depth
+                    card.rotationY = 0
+                    card.rotationX = 0
+                    card.update()
+                    card.el.style.opacity = 1
+
+                    card.onTransitionEnd(function () {
+                        card.setCSSTransition(transitionFast)
+                    })
+                })
+            }, 0)
+
+            function ran () {
+                return Math.floor(Math.random() * 128) + 127
+            }
+            
+        }
+        </script>
+    </body>
+</html>
