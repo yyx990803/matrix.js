@@ -199,4 +199,4 @@ var BigBox = Box.extend({
 
 - **setCSSTransformOrigin(string), setCSSTransformStyle(string), setCSSTransition(string), setCSSPerspective(string)**
 
-    Set the object's `el`'s CSS transform properties. These methods take care of using the correct prefixes so you can just use un-prefixed values.
+    Set the object's `el`'s CSS properties.
