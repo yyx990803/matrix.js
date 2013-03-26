@@ -85,6 +85,13 @@ var Box = MX.Object3D.extend({
     spin: function () { ... }
 })
 var box = new Box()
+
+// You can further extend Box:
+var BigBox = Box.extend({
+    init: function () {
+        this.scale = 10
+    }
+})
 ```
 
 **Instance Properties**
