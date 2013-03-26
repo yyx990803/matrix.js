@@ -23,6 +23,7 @@
 var MX = MX || (function (undefined) {
 
     var MX = {
+        version: '0.1.0',
         prefix: undefined,
         rotationUnit: 'rad'
     }
