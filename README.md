@@ -1,6 +1,6 @@
-# Pre-alpha work in progress!
+# Featherweight CSS 3D Engine
 
-A featherweight CSS 3D engine. Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Better suited to add 3D stuff to a normal DOM heavy page. Doesn't provide any vector/matrix math utilities though.
+Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Better suited to add 3D stuff to a normal DOM heavy page. Doesn't provide any vector/matrix math utilities though.
 
 ### But there are no matrices in the source code!
 
@@ -190,6 +190,10 @@ var BigBox = Box.extend({
 - **removeElement()**
 
     Removes the object's DOM element from the page.
+
+- **setPosition(target), setRotation(target), setScale(target)**
+
+    Convenience methods for setting values on multiple axis (maybe helpful when used in conunction with a 3d vector library). Target can be any object with `x`,`y`,`z` properties. Any omitted axis will use current value.
 
 - **setCSSTransformOrigin(string), setCSSTransformStyle(string), setCSSTransition(string), setCSSPerspective(string)**
 

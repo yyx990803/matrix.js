@@ -307,9 +307,7 @@ var MX = MX || (function (undefined) {
 
         lookAt: function (target, update) {
             var r = this.getLookAtEuler(target)
-            this.rotationX = r.x
-            this.rotationY = r.y
-            this.rotationZ = r.z
+            this.setRotation(r)
             if (update !== false) this.update()
             return this
         },
@@ -379,6 +377,24 @@ var MX = MX || (function (undefined) {
             if (this.el.parentNode) {
                 this.el.parentNode.removeChild(this.el)
             }
+        },
+
+        setPosition: function (tar) {
+            this.x = (tar.x || tar.x === 0) ? tar.x : this.x
+            this.y = (tar.y || tar.y === 0) ? tar.y : this.y
+            this.z = (tar.z || tar.z === 0) ? tar.z : this.z
+        },
+
+        setRotation: function (tar) {
+            this.rotationX = (tar.x || tar.x === 0) ? tar.x : this.rotationX
+            this.rotationY = (tar.y || tar.y === 0) ? tar.y : this.rotationY
+            this.rotationZ = (tar.z || tar.z === 0) ? tar.z : this.rotationZ
+        },
+
+        setScale: function (tar) {
+            this.scaleX = (tar.x || tar.x === 0) ? tar.x : this.scaleX
+            this.scaleY = (tar.y || tar.y === 0) ? tar.y : this.scaleY
+            this.scaleZ = (tar.z || tar.z === 0) ? tar.z : this.scaleZ
         },
 
         setCSSTransformOrigin: function (origin) {
