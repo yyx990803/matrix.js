@@ -76,7 +76,11 @@ It also comes with an inheritence util method `extend()`:
 // Creating a resuable box class
 var Box = MX.Object3D.extend({
     // init will be called in the constructor function
-    init: function () { ... },
+    init: function () {
+        // MX.Object3D's constructor is called first
+        // so this.el will be already created in here
+        this.el.classList.add('box')
+    },
     // all other properties will be mixed into the prototype
     spin: function () { ... }
 })
