@@ -38,7 +38,8 @@ var MX = MX || (function (undefined) {
         transitionProp,
         transformOriginProp,
         transformStyleProp,
-        perspectiveProp
+        perspectiveProp,
+        transitionEndEvent
 
     var positionAtCenter = true, // whether to auto center objects
         centeringCSS // styles to inject for center positioning
@@ -61,6 +62,7 @@ var MX = MX || (function (undefined) {
         transformOriginProp = MX.transformOriginProp = addPrefix('transformOrigin')
         transformStyleProp  = MX.transformStyleProp  = addPrefix('transformStyle')
         perspectiveProp     = MX.perspectiveProp     = addPrefix('perspective')
+        transitionEndEvent  = MX.transitionEndEvent  = MX.prefix === 'webkit' ? 'webkitTransitionEnd' : 'transitionend'
 
         // shiv rAF
 
@@ -180,19 +182,20 @@ var MX = MX || (function (undefined) {
         constructor: Object3D,
 
         reset: function () {
-            this.x = this.__x                   = 0
-            this.y = this.__y                   = 0
-            this.z = this.__z                   = 0
-            this.rotationX = this.__rotationX   = 0
-            this.rotationY = this.__rotationY   = 0
-            this.rotationZ = this.__rotationZ   = 0
-            this.scaleX = this.__scaleX         = 1
-            this.scaleY = this.__scaleY         = 1
-            this.scaleZ = this.__scaleZ         = 1
-            this.scale = this.__scale           = 1
-            this.rotationOrigin                 = undefined
-            this.followTarget                   = undefined
-            this.dirty                          = true
+            this.x = this.__x                       = 0
+            this.y = this.__y                       = 0
+            this.z = this.__z                       = 0
+            this.rotationX = this.__rotationX       = 0
+            this.rotationY = this.__rotationY       = 0
+            this.rotationZ = this.__rotationZ       = 0
+            this.scaleX = this.__scaleX             = 1
+            this.scaleY = this.__scaleY             = 1
+            this.scaleZ = this.__scaleZ             = 1
+            this.scale = this.__scale               = 1
+            this.perspective = this.__perspective   = 0
+            this.rotationOrigin                     = undefined
+            this.followTarget                       = undefined
+            this.dirty                              = true
             this.update()
         },
 
@@ -271,6 +274,11 @@ var MX = MX || (function (undefined) {
                 this.dirty = true
             }
 
+            if (this.perspective !== this.__perspective) {
+                this.__perspective = this.perspective
+                this.dirty = true
+            }
+
             if (this.dirty && this.el) {
 
                 var rotationTranslation = buildRotationTranslation(this),
@@ -280,6 +288,7 @@ var MX = MX || (function (undefined) {
 
                 var transformString =
                     (MX.positionAtCenter ? 'translate3d(-50%, -50%, 0) ' : '')
+                    + (this.perspective ? 'perspective(' + this.perspective + 'px) ' : '')
                     + 'translate3d('
                         + this.x.toFixed(floatPrecision) + 'px,'
                         + (-this.y).toFixed(floatPrecision) + 'px,'
@@ -416,6 +425,20 @@ var MX = MX || (function (undefined) {
         setCSSPerspective: function (pers) {
             this.el && (this.el.style[perspectiveProp] = pers)
             return this
+        },
+
+        onTransitionEnd: function (callback) {
+            this.cancelTransitionEnd()
+            var el = this.el
+            el.addEventListener(transitionEndEvent, onEnd)
+            function onEnd () {
+                el.removeEventListener(transitionEndEvent, onEnd)
+                callback()
+            }
+        },
+
+        cancelTransitionEnd: function () {
+            this.el.removeEventListener(transitionEndEvent)
         }
 
     }

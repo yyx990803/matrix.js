@@ -2,7 +2,7 @@
 
 ## Featherweight CSS 3D Engine
 
-Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Better suited to add 3D stuff to a normal DOM heavy page. Doesn't provide any vector/matrix math utilities though.
+Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Doesn't provide any vector/matrix math utilities though.
 
 ### But there are no matrices in the source code!
 
@@ -124,6 +124,11 @@ var BigBox = Box.extend({
     **Default**: `1`  
     The scale for all three axes. If this is not 1 it will override any scaling on individual axis.
 
+- **perspective** _{ Number }_
+
+    **Default**: `0`  
+    The perspective for this object, relative to its own center.
+
 - **width, height** _{ Number }_
 
     **Default**: `0`  
@@ -197,6 +202,10 @@ var BigBox = Box.extend({
 
     Convenience methods for setting values on multiple axis (maybe helpful when used in conunction with a 3d vector library). Target can be any object with `x`,`y`,`z` properties. Any omitted axis will use current value.
 
-- **setCSSTransformOrigin(string), setCSSTransformStyle(string), setCSSTransition(string), setCSSPerspective(string)**
+- **setCSSTransformOrigin(value), setCSSTransformStyle(value), setCSSTransition(value), setCSSPerspective(value)**
 
     Set the object's `el`'s CSS properties.
+
+- **onTransitionEnd(callback)**
+
+    Add a listener for CSS transition end event. Automatically removes itself when fired.
