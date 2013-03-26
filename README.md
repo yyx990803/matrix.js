@@ -22,7 +22,7 @@ The core is simply `mx.js` which provides:
 
 [MX.Object3D](#mxobject3d)
 
-There are a few other extensions such as `MX.Scene` and `MX.rotationControl`,
+There are a few other extensions such as `MX.Scene` and `MX.rotationControl`, and pre-built objects such as `MX.Box`, `MX.Coords` and `MX.TexturedBox` which can all be separately loaded as needed. For usage of these extensions, please refer to the `examples` folder.
 
 ---
 
