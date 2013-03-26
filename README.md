@@ -1,4 +1,6 @@
-# Featherweight CSS 3D Engine
+# Matrix.js
+
+## Featherweight CSS 3D Engine
 
 Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Better suited to add 3D stuff to a normal DOM heavy page. Doesn't provide any vector/matrix math utilities though.
 
