@@ -7,7 +7,6 @@
             html, body {
                 height: 100%;
                 margin: 0;
-                overflow: hidden;
             }
             body {
                 font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -126,7 +125,7 @@
                     var pos = this.el.getBoundingClientRect(),
                         targetPos = {
                             x: (window.innerWidth - width) / 2 + mHorizontal,
-                            y: (window.innerHeight - height) / 2 + mVertical - 50
+                            y: (window.innerHeight - height) / 2 + mVertical
                         }
                     this.x = targetPos.x - pos.left
                     this.y = -(targetPos.y - pos.top)
