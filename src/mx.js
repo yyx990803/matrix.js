@@ -398,22 +398,22 @@ var MX = MX || (function (undefined) {
         },
 
         setCSSTransformOrigin: function (origin) {
-            this.el && (this.el.style[transformOriginProp] = origin)
+            this.el && (this.el.style[transformOriginProp] = addPrefix(origin))
             return this
         },
 
         setCSSTransformStyle: function (style) {
-            this.el && (this.el.style[transformStyleProp] = style)
+            this.el && (this.el.style[transformStyleProp] = addPrefix(style))
             return this
         },
 
         setCSSTransition: function (trans) {
-            this.el && (this.el.style[transitionProp] = trans)
+            this.el && (this.el.style[transitionProp] = addPrefix(trans))
             return this
         },
 
         setCSSPerspective: function (pers) {
-            this.el && (this.el.style[perspectiveProp] = pers)
+            this.el && (this.el.style[perspectiveProp] = addPrefix(pers))
             return this
         }
 
