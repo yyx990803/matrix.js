@@ -99,7 +99,7 @@ var BigBox = Box.extend({
 Once you have an `MX.Object3D` instance, you can manipulate in a style similar to Flash/ActionScript:
 
 ```js
-var obj = new MX.Object3D()
+var obj = new MX.Object3D().addTo('body')
 
 obj.x = 100
 obj.y = 100 // y axis points UPWARDS!
