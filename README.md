@@ -2,7 +2,7 @@
 
 ## Featherweight CSS 3D Engine
 
-Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. Doesn't provide any vector/matrix math utilities though.
+Similar to Three.js CSS3D Renderer, but less intrusive and much lighter in weight. The core is 2kb minified/gzipped. Doesn't provide any vector/matrix math utilities though.
 
 ### But there are no matrices in the source code!
 
@@ -96,6 +96,21 @@ var BigBox = Box.extend({
 })
 ```
 
+Once you have an `MX.Object3D` instance, you can manipulate in a style similar to Flash/ActionScript:
+
+```js
+var obj = new MX.Object3D()
+
+obj.x = 100
+obj.y = 100 // y axis points UPWARDS!
+obj.z = 100 // z axis points AWAY from the user
+
+obj.rotationX += Math.PI / 2 // default rotation unit is in radian
+
+obj.update() // you need to call update() to actually apply the css change to DOM
+
+```
+
 **Instance Properties**
 
 - **el** _{ HTMLElement }_
@@ -105,7 +120,7 @@ var BigBox = Box.extend({
 - **x, y, z** _{ Number }_
 
     **Default**: `0`  
-    The position of the element in the 3D space, relative to (**Note the Y axis points upwards in MX's system**):
+    The position of the element in the 3D space, relative to:
     - Its parent object's center if `MX.positionAtCenter` is `true`
     - Its default position on page if `MX.positionAtCenter` is `false`
 
