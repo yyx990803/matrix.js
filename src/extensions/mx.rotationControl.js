@@ -1,3 +1,16 @@
+// Usage:
+//
+//   var control = new MX.RotationControl()
+//   control.init( object{MX.Object3D} [, listener{HTMLElement}] )
+//
+// In animation loop:
+//
+//   control.update() 
+//
+// The above code will register handler functions on `listener`
+// and will be updating `object`s rotationX and rotationY
+// If no `listener` is provided, will default to `object`s el.
+
 MX.RotationControl = function () {
 
     var object,

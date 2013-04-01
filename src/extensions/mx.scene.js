@@ -1,3 +1,12 @@
+// NOTE
+//
+// This is not a fully functional 3d scene as you might expect.
+// The camera can only do pitch (rotationX) and yaw (rotationY), but no roll (rotationZ)
+// because I haven't implemented alternative euler orders or quaternions.
+//
+// For serious 3D scenes with more functionalities you should use
+// THREE.js with CSS3D Renderer.
+
 MX.Scene = (function () {
 
     var add = MX.Object3D.prototype.add,
@@ -120,10 +129,6 @@ MX.Scene = (function () {
         }
 
     }
-
-    // NOTE
-    // The camera can only do pitch (rotationX) and yaw (rotationY), but no roll (rotationZ)
-    // because I haven't implemented alternative euler orders.
 
     function getCameraEuler (target) {
         var dx = target.x - this.x,
